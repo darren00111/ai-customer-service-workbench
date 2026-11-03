@@ -2,7 +2,7 @@
 
 **仅支持抖店飞鸽，最多接入 1 家店铺。** 基于原桌面版本裁剪，保留飞鸽登录、消息监听、模型回复、知识库和人工草稿。
 
-[社区版安装与使用](docs/社区版安装与使用.md)
+[下载 Windows 社区版安装包](https://github.com/darren00111/ai-customer-service-workbench/releases/download/v1.12.0-community/douyin-community-v1.12.0-windows.zip) · [社区版安装与使用](docs/社区版安装与使用.md)
 
 原有说明和教程视频继续保留。历史说明中的多平台、多店铺内容不属于本次社区版范围。
 
