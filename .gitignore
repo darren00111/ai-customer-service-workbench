@@ -28,6 +28,7 @@ feige-agent/knowledge/
 **/*.log
 feige-agent/docs/verification/
 .github-upload/
+.demo-work/
 .workbuddy/
 .list_items
 .scroller

@@ -28,8 +28,11 @@ SUFFIXES = {'.py', '.js', '.html', '.css', '.json', '.yaml', '.yml', '.md',
 
 def source_files():
     result = {}
-    for name in ('.gitignore', 'README.md', 'SECURITY.md'):
+    for name in ('.gitignore', 'README.md', 'SECURITY.md', '项目介绍.md'):
         result[name] = (ROOT / name).read_bytes()
+    for name in ('customer-service-demo-30s.mp4', 'customer-service-demo-poster.jpg'):
+        path = ROOT / 'docs/media' / name
+        result[path.relative_to(ROOT).as_posix()] = path.read_bytes()
     for base in ('feige-agent', 'feige-fashion-customer-service', 'tools'):
         paths = []
         for folder, directories, names in os.walk(ROOT / base):
@@ -129,7 +132,7 @@ def main():
             target.write_bytes(raw)
         payload = []
         for name, raw in files.items():
-            binary = name.endswith(('.png', '.ico'))
+            binary = name.endswith(('.png', '.ico', '.jpg', '.mp4'))
             payload.append({'path': name, 'mode': '100644', 'type': 'blob', 'binary': binary,
                             'content': base64.b64encode(raw).decode() if binary else raw.decode('utf-8')})
         encoded = base64.b64encode(json.dumps(payload, ensure_ascii=False).encode()).decode()
