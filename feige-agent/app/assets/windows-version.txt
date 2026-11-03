@@ -1,0 +1,11 @@
+VSVersionInfo(
+  ffi=FixedFileInfo(filevers=(1, 12, 0, 0), prodvers=(1, 12, 0, 0),
+                    mask=0x3f, flags=0x2, OS=0x40004, fileType=0x1, subtype=0x0, date=(0, 0)),
+  kids=[StringFileInfo([StringTable('080404B0', [
+    StringStruct('FileDescription', '抖店智能客服'),
+    StringStruct('FileVersion', '1.12.0-preview'),
+    StringStruct('InternalName', 'FeigeCustomerService'),
+    StringStruct('OriginalFilename', 'FeigeCustomerService.exe'),
+    StringStruct('ProductName', '抖店智能客服'),
+    StringStruct('ProductVersion', '1.12.0-preview')])]),
+    VarFileInfo([VarStruct('Translation', [2052, 1200])])])

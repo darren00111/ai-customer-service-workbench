@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>抖店智能客服</title>
+  <link rel="icon" href="../assets/app-icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主要内容</a>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand" aria-label="抖店智能客服控制台">
+        <span class="brand-mark" aria-hidden="true">
+          <img src="../assets/app-icon.svg" width="34" height="34" alt="">
+        </span>
+        <span>抖店智能客服</span>
+        <span class="version" id="version">桌面控制台</span>
+      </div>
+      <div class="top-actions">
+        <button class="button button-secondary" id="experienceButton" type="button">立即体验 · 无需店铺</button>
+        <button class="button button-primary" id="addStoreButton" type="button">添加店铺</button>
+        <button class="button button-secondary" id="workbenchButton" type="button">接入与试聊</button>
+        <span class="sync-label" id="syncLabel">本地预览</span>
+        <button class="button button-secondary icon-button" id="refreshButton" type="button" aria-label="刷新状态" title="刷新状态">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6v5h-5M4 18v-5h5M6.1 9a7 7 0 0 1 11.6-2.6L20 11M4 13l2.3 4.6A7 7 0 0 0 18 15"/></svg>
+        </button>
+        <button class="button button-primary" id="startAllButton" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 7 8 5-8 5V7Z"/></svg>
+          <span>启动全部店铺</span>
+        </button>
+      </div>
+    </header>
+
+    <section class="welcome-strip" aria-label="首次使用指引">
+      <div><strong>第一次使用？先试一遍资料整理和客服回复。</strong><p>无需店铺账号或模型密钥。准备接入时，添加店铺，再分别检查连接和知识准备。</p></div>
+      <button class="button button-primary" id="welcomeExperienceButton" type="button">开始模拟体验</button>
+    </section>
+
+    <div class="workspace">
+      <div class="control-pane">
+        <section class="store-header" aria-labelledby="storeTitle">
+          <div>
+            <div class="title-line">
+              <h2 id="storeTitle">选择店铺</h2>
+              <span class="status-pill neutral" id="storeStatus">未启动</span>
+            </div>
+            <p id="storeHint">选择店铺后，可在这里单独启动。</p>
+          </div>
+          <div class="store-buttons">
+            <button class="button button-secondary" id="loginStoreButton" type="button" disabled>打开登录入口</button>
+            <button class="button button-secondary" id="chooseQianniuButton" type="button" hidden>选择千牛安装位置</button>
+            <button class="button button-secondary" id="storeKnowledgeButton" type="button" disabled>店铺知识库</button>
+            <button class="button button-secondary" id="connectionStoreButton" type="button" disabled>查看会话与接待设置</button>
+            <button class="button button-secondary" id="storeActionButton" type="button" disabled>启动店铺</button>
+          </div>
+        </section>
+      <aside class="sidebar" aria-labelledby="shopsHeading">
+        <div class="sidebar-heading">
+          <div>
+            <p class="eyebrow">店铺</p>
+            <h1 id="shopsHeading">运行状态</h1>
+          </div>
+          <span class="count" id="shopCount">0</span>
+        </div>
+        <label class="platform-filter">筛选平台
+          <select id="platformFilter"><option value="all">全部平台</option><option value="taobao">淘宝／天猫</option><option value="feige">抖店</option><option value="pinduoduo">拼多多</option></select>
+        </label>
+        <div class="shop-list" id="shopList" role="list"></div>
+        <p id="shopListEmpty" class="muted" hidden>当前平台还没有店铺，点击“添加店铺”开始。</p>
+      </aside>
+
+      <main class="main" id="main" tabindex="-1">
+        <section class="metrics" aria-label="运行概览">
+          <article class="metric">
+            <span>在线店铺</span>
+            <strong id="onlineMetric">0 / 0</strong>
+          </article>
+          <article class="metric">
+            <span>累计回复</span>
+            <strong id="replyMetric">0</strong>
+          </article>
+          <article class="metric">
+            <span>等待人工</span>
+            <strong id="attentionMetric">0</strong>
+          </article>
+        </section>
+
+        <div class="content-grid">
+          <section class="panel" aria-labelledby="activityHeading">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">当前店铺</p>
+                <h2 id="activityHeading">运行详情</h2>
+              </div>
+            </div>
+            <div class="detail-list" id="detailList"></div>
+            <div class="empty-state" id="activityEmpty">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6.5h14v11H5zM8 10h8M8 14h5"/></svg>
+              <strong>暂无运行记录</strong>
+              <span>启动店铺后，这里会显示监听和回复情况。</span>
+            </div>
+          </section>
+
+          <section class="panel attention-panel" aria-labelledby="attentionHeading">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">人工处理</p>
+                <h2 id="attentionHeading">人工草稿</h2>
+              </div>
+              <span class="count attention-count" id="attentionCount">0</span>
+            </div>
+            <div class="attention-list" id="attentionList"></div>
+            <div class="empty-state" id="attentionEmpty">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6.5 12 3.2 3.2L17.5 7.5M4 4h16v16H4z"/></svg>
+              <strong>没有待处理消息</strong>
+              <span>高风险和低置信度消息会生成草稿，确认后再发送。</span>
+            </div>
+          </section>
+        </div>
+        <section class="panel knowledge-panel" aria-labelledby="knowledgeQueueHeading">
+          <div class="panel-heading"><div><p class="eyebrow">后台资料补全</p><h2 id="knowledgeQueueHeading">各店待补知识</h2></div><span class="count" id="knowledgeQueueCount">0</span></div>
+          <p class="muted">漏答和改判产生的问题卡片集中在这里。补资料后需要复测、核对并发布；售后仍在人工待办处理。</p>
+          <div id="knowledgeQueueList" class="knowledge-queue"></div>
+        </section>
+      </main>
+      </div>
+
+      <section class="browser-host" id="browserHost" aria-labelledby="browserHeading">
+        <div class="browser-placeholder" id="browserPlaceholder">
+          <span class="browser-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM4 9h16M7 7h.01M10 7h.01"/></svg>
+          </span>
+          <h2 id="browserHeading">飞鸽原页面</h2>
+          <p id="browserHint">启动店铺后，已验证的飞鸽页面会显示在这里。</p>
+          <button class="button button-secondary" id="embedRetryButton" type="button">重新载入原页面</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <dialog id="addStoreDialog" aria-labelledby="addStoreTitle" aria-describedby="addStoreHint">
+    <form id="addStoreForm">
+      <div class="panel-heading"><h2 id="addStoreTitle">添加店铺</h2><button class="button button-secondary" id="closeAddStore" type="button" aria-label="关闭添加店铺">关闭</button></div>
+      <p id="addStoreHint" class="muted">每家店独立保存登录资料和知识。添加后再登录、核对身份及测试接待，不会立即自动回复。</p>
+      <label>店铺平台<select id="newStorePlatform" required><option value="taobao">淘宝／天猫</option><option value="feige">抖店</option><option value="pinduoduo">拼多多</option></select></label>
+      <p id="newStorePlatformHint" class="muted">淘宝使用千牛桌面客户端；实际收发需要核对客户端兼容性。</p>
+      <label>店铺名称<input id="newStoreName" maxlength="100" required placeholder="例如 品牌旗舰店"></label>
+      <label>经营品类<input id="newStoreCategory" maxlength="100" value="通用零售" required></label>
+      <details><summary>商家分组（可选）</summary><label>商家标识<input id="newMerchantId" maxlength="64" pattern="[A-Za-z0-9_-]{1,64}" value="local"></label><p class="muted">同一商家可使用相同标识，便于关联共用商品属性；各店价格、库存和政策分别维护。</p></details>
+      <p id="addStoreError" role="alert"></p>
+      <button class="button button-primary" id="submitAddStore" type="submit">添加并查看店铺</button>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true">
+    <span id="toastMessage"></span>
+    <button id="toastClose" type="button" aria-label="关闭提示">×</button>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

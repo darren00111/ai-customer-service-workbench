@@ -1,0 +1,7 @@
+interface:
+  display_name: "飞鸽服装智能客服"
+  short_description: "在飞鸽网页回答服装咨询，并把售后问题通知人工处理"
+  default_prompt: "Use $feige-fashion-customer-service to handle new clothing-store conversations in Feige."
+
+policy:
+  allow_implicit_invocation: true

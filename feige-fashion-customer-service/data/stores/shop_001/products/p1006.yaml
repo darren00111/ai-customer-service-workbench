@@ -1,0 +1,72 @@
+product_id: P1006
+sku_code: SKU-SKT2606
+title: 高腰A字侧拉链半身裙
+category: 裙装
+status: sold_out
+price_cny: 159
+stock: 0
+season: 春秋
+updated_at: '2026-09-10'
+size_chart:
+  basis: 成衣尺寸
+  unit: cm
+  rows:
+  - size: S
+    bust: null
+    waist: 66
+    hip: 90
+    length: 58
+    shoulder: null
+    sleeve: null
+  - size: M
+    bust: null
+    waist: 70
+    hip: 94
+    length: 59
+    shoulder: null
+    sleeve: null
+  - size: L
+    bust: null
+    waist: 74
+    hip: 98
+    length: 60
+    shoulder: null
+    sleeve: null
+  - size: XL
+    bust: null
+    waist: 78
+    hip: 102
+    length: 61
+    shoulder: null
+    sleeve: null
+material:
+  composition:
+  - fiber: 聚酯纤维
+    percent: 95
+  - fiber: 氨纶
+    percent: 5
+  lining: null
+  weight_gsm: 240
+  elasticity: 微弹
+  thickness: 常规
+  care: null
+fit:
+  silhouette: A字
+  waistline: 高腰
+  fit_type: 常规
+  notes: 侧隐形拉链，膝上长度
+variants:
+- color: 黑
+  sizes:
+    S: 0
+    M: 0
+    L: 0
+    XL: 0
+- color: 卡其
+  sizes:
+    S: 0
+    M: 0
+    L: 0
+    XL: 0
+source: sample
+sample_data: true

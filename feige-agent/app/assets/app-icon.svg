@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="jade" x1="72" y1="26" x2="448" y2="492" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#249a83"/>
+      <stop offset=".5" stop-color="#16715f"/>
+      <stop offset="1" stop-color="#0b4038"/>
+    </linearGradient>
+    <linearGradient id="light" x1="110" y1="82" x2="362" y2="442" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff"/>
+      <stop offset="1" stop-color="#e5f8ee"/>
+    </linearGradient>
+    <linearGradient id="wing" x1="202" y1="304" x2="340" y2="170" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#137662"/>
+      <stop offset="1" stop-color="#279b80"/>
+    </linearGradient>
+  </defs>
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="url(#jade)"/>
+  <rect x="17" y="17" width="478" height="478" rx="111" fill="none" stroke="#fff" stroke-opacity=".16" stroke-width="2"/>
+  <path d="M116 103h280a80 80 0 0 1 80 80" fill="none" stroke="#fff" stroke-opacity=".07" stroke-width="10" stroke-linecap="round"/>
+  <path d="M112 174a62 62 0 0 1 62-62h164a62 62 0 0 1 62 62v128a62 62 0 0 1-62 62H219l-72 51v-61a62 62 0 0 1-35-56Z" fill="#002d26" opacity=".16" transform="translate(0 12)"/>
+  <path d="M112 174a62 62 0 0 1 62-62h164a62 62 0 0 1 62 62v128a62 62 0 0 1-62 62H219l-72 51v-61a62 62 0 0 1-35-56Z" fill="url(#light)"/>
+  <path d="m177 242 162-61-54 148-33-61Z" fill="url(#wing)" stroke="url(#wing)" stroke-width="12" stroke-linejoin="round"/>
+  <path d="m252 268 52-53" fill="none" stroke="#e5f8ee" stroke-width="12" stroke-linecap="round"/>
+  <path d="m404 80 7 20 20 7-20 7-7 20-7-20-20-7 20-7Z" fill="#c2f6cf"/>
+</svg>

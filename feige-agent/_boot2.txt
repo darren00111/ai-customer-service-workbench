@@ -1,0 +1,20 @@
+
+=== 启动 ===
+Traceback (most recent call last):
+  File "C:\Users\1154\Documents\ChatGPT\抖店智能客服\feige-agent\run.py", line 208, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "C:\Users\1154\Documents\ChatGPT\抖店智能客服\feige-agent\run.py", line 204, in main
+    return a.func(a)
+           ~~~~~~^^^
+  File "C:\Users\1154\Documents\ChatGPT\抖店智能客服\feige-agent\run.py", line 64, in cmd_boot
+    r = agent.launch_browser()
+  File "C:\Users\1154\Documents\ChatGPT\抖店智能客服\feige-agent\app\agent.py", line 60, in launch_browser
+    info = browser.ensure_browser(
+        port, self.cfg.get("profile_dir"), self.cfg.get("workspace_url"), chrome=chrome
+    )
+  File "C:\Users\1154\Documents\ChatGPT\抖店智能客服\feige-agent\app\engine\browser.py", line 84, in ensure_browser
+    raise RuntimeError(
+        "端口 %d 被占用但不是 CDP 服务。请更换端口，或关掉占用该端口的程序。" % port
+    )
+RuntimeError: 端口 9222 被占用但不是 CDP 服务。请更换端口，或关掉占用该端口的程序。

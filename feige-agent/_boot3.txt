@@ -1,0 +1,8 @@
+
+=== 启动 ===
+浏览器        : {'status': 'reused', 'port': 9222}
+页面状态      : no_conversation（已登录，请点开一个会话）
+地址          : https://im.jinritemai.com/pc_seller_v2/main/workspace
+会话数        : 0
+
+提示：没有打开的会话。可用 python run.py convs 看列表，用 python run.py open <序号> 打开一个。

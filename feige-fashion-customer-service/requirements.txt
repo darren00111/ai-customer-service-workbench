@@ -1,0 +1,6 @@
+# 飞鸽服装智能客服 —— Python 依赖
+#
+# 知识库资料用 YAML 存储（人工可读、便于商家核对），因此需要 pyyaml。
+# 其余脚本只用标准库（io / json / os / re / unicodedata / argparse / ctypes）。
+
+pyyaml>=6.0

@@ -1,0 +1,59 @@
+# 将本文件复制到 knowledge/stores/<store_id>/merchant.yaml。
+# 目录名与 store_id 一致；新客户只需维护此文件与可选的 products/*.yaml。
+schema_version: 1
+store_id: your_store
+name: 您的店铺名称
+merchant_id: local          # 同一商家的多平台店铺使用相同标识
+
+platform:
+  type: feige                 # feige / taobao / pinduoduo / xiaohongshu；后三者仅准备资料，消息待接入
+  cdp_port: 9222             # 多店必须各不相同
+  workspace_url: https://im.jinritemai.com/pc_seller_v2/main/workspace
+  profile_dir: data/profiles/your_store
+  browser_path: ''           # 留空优先使用 Edge，可填写指定浏览器路径
+
+automation:
+  enabled: true
+  auto_send: false          # 首次接入默认关闭
+  auto_start: false
+  poll_interval: 3.0
+  full_scan_interval: 15.0 # 页面变化监听不可用时按 poll_interval 回退；此值用于定期补扫
+  max_replies_per_minute: 20
+
+business:
+  reception:
+    enabled: true            # 新版接待；模型未接入时仅生成预览，不向飞鸽自动发送
+  category: ''               # 例如台球用品、家居、3C；仅用于店铺描述，不影响核心代码
+  handoff:
+    keywords: [退款, 退货, 换货, 售后, 投诉, 赔偿, 转人工, 人工客服, 再便宜, 单独优惠, 私下优惠, 特殊折扣]
+  shipping:
+    lead_time: ''            # 商家核准后填写，如“现货通常48小时内发货”
+    origin: ''               # 发货地
+    carriers: []            # 例如 [中通, 圆通]
+    delivery_estimate: ''    # 统一预计时效；地区差异明显时不要填写笼统承诺
+    delivery_by_region: {}  # 例如 {湖南: '2-4天', 广东: '1-2天'}
+  orders:
+    flow: ''                 # 下单步骤或商品页说明
+  payment:
+    methods: []             # 仅填平台/店铺实际支持的方式
+  promotions:
+    note: ''                 # 仅填公开活动；额外让利交由人工
+  policies: {}              # 其他已经核准的售前政策
+  synonyms: {}              # 口语/别称到标准说法，例如 {台球粉: 巧克粉}
+  intents: {}               # 可覆盖内置意图的 keywords/source，或新增 answer 固定答复
+  # intents:
+  #   authenticity:
+  #     keywords: [是正品吗, 官方授权吗]
+  #     answer: '本店为品牌授权店，授权信息可在店铺主页查看。'
+
+catalog:
+  products: []              # 小店可直接填写商品；较多商品可放 products/*.yaml
+  # products:
+  #   - product_id: SKU001
+  #     title: 商品名称
+  #     aliases: [客户常用简称]
+  #     source: 商家商品中心
+  #     updated_at: '2026-09-23'
+  #     price: {value: 99, source: 商家商品中心, updated_at: '2026-09-23', expires_at: '2026-09-30'}
+  #     stock: {value: 10, source: 商家库存中心, updated_at: '2026-09-23', expires_at: '2026-09-24'}
+  #     attributes: {规格: 标准款, 颜色: 黑色}

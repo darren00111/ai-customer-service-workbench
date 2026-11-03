@@ -1,0 +1,18 @@
+scripts/__pycache__/
+_tmp/
+
+# 原始资料与对话记录可能含店名、商品信息甚至客户隐私，默认不提交
+data/stores/*/raw/*
+!data/stores/*/raw/README.md
+data/conversations/*
+!data/conversations/.gitkeep
+
+# 本机运行状态与截图可能包含账号或客户信息
+data/*.png
+data/last_read.json
+data/sent_log.jsonl
+data/state.json
+
+# 运行产物
+*.log
+data/**/*.local.yaml

@@ -1,0 +1,72 @@
+product_id: P1007
+sku_code: SKU-HOD2607
+title: 加绒连帽宽松卫衣 秋冬款
+category: 上装
+status: on_sale
+price_cny: 229
+stock: 210
+season: 秋冬
+updated_at: '2026-09-12'
+size_chart:
+  basis: 成衣尺寸
+  unit: cm
+  rows:
+  - size: M
+    bust: 112
+    waist: null
+    hip: null
+    length: 66
+    shoulder: 52
+    sleeve: 58
+  - size: L
+    bust: 116
+    waist: null
+    hip: null
+    length: 68
+    shoulder: 53
+    sleeve: 59
+  - size: XL
+    bust: 120
+    waist: null
+    hip: null
+    length: 70
+    shoulder: 54
+    sleeve: 60
+  - size: 2XL
+    bust: 124
+    waist: null
+    hip: null
+    length: 72
+    shoulder: 55
+    sleeve: 61
+material:
+  composition:
+  - fiber: 棉
+    percent: 80
+  - fiber: 聚酯纤维
+    percent: 20
+  lining: 内里抓绒
+  weight_gsm: 380
+  elasticity: 微弹
+  thickness: 加厚
+  care: null
+fit:
+  silhouette: 宽松
+  waistline: 无腰身
+  fit_type: 宽松
+  notes: 落肩加绒，袋鼠口袋，抽绳连帽
+variants:
+- color: 燕麦
+  sizes:
+    M: 40
+    L: 45
+    XL: 30
+    2XL: 15
+- color: 藏青
+  sizes:
+    M: 35
+    L: 40
+    XL: 25
+    2XL: 20
+source: sample
+sample_data: true

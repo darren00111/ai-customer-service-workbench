@@ -1,0 +1,74 @@
+product_id: P1009
+sku_code: SKU-TRS2609
+title: 高腰拖地阔腿西装裤
+category: 裤装
+status: on_sale
+price_cny: 249
+stock: 168
+season: 春秋
+updated_at: '2026-09-05'
+size_chart:
+  basis: 净尺寸
+  unit: cm
+  rows:
+  - size: S
+    bust: null
+    waist: 64
+    hip: 92
+    length: 102
+    shoulder: null
+    sleeve: null
+  - size: M
+    bust: null
+    waist: 68
+    hip: 96
+    length: 103
+    shoulder: null
+    sleeve: null
+  - size: L
+    bust: null
+    waist: 72
+    hip: 100
+    length: 104
+    shoulder: null
+    sleeve: null
+  - size: XL
+    bust: null
+    waist: 76
+    hip: 104
+    length: 105
+    shoulder: null
+    sleeve: null
+material:
+  composition:
+  - fiber: 粘胶
+    percent: 70
+  - fiber: 聚酯纤维
+    percent: 25
+  - fiber: 氨纶
+    percent: 5
+  lining: null
+  weight_gsm: 290
+  elasticity: 微弹
+  thickness: 常规
+  care: null
+fit:
+  silhouette: 阔腿
+  waistline: 高腰
+  fit_type: 宽松
+  notes: 拖地裤长，前褶设计，建议按身高选码
+variants:
+- color: 黑
+  sizes:
+    S: 22
+    M: 34
+    L: 28
+    XL: 16
+- color: 米白
+  sizes:
+    S: 18
+    M: 26
+    L: 0
+    XL: 24
+source: sample
+sample_data: true

@@ -1,0 +1,15 @@
+
+=== 本轮结果 ===
+{
+  "at": "20:33:46",
+  "buyer": "热力台球",
+  "latest": "在吗",
+  "bubbles": 28,
+  "acted": false,
+  "sent": false,
+  "dry_run": false,
+  "closed": true,
+  "skip": "会话已结束，不向已关闭的会话发送"
+}
+
+本机处理耗时  : 3 ms

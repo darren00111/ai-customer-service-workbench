@@ -1,0 +1,34 @@
+# Local accounts, conversations, credentials, and browser state
+feige-agent/data/
+feige-agent/knowledge/
+**/.env
+**/.env.*
+!**/.env.example
+!**/.env.sample
+**/qwen.json
+**/credentials.json
+**/secrets.json
+**/*private*.pem
+**/*private*.key
+**/profiles/
+**/chrome-profile/
+**/test-profile/
+
+# Generated packages and local backups
+**/.venv/
+**/node_modules/
+**/__pycache__/
+**/*.pyc
+**/build/
+**/dist/
+**/releases/
+**/backups/
+**/_tmp/
+**/*.spec
+**/*.log
+feige-agent/docs/verification/
+.github-upload/
+.workbuddy/
+.list_items
+.scroller
+.scroller_content

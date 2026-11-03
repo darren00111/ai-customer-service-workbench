@@ -1,0 +1,70 @@
+product_id: P1008
+sku_code: SKU-SHR2608
+title: 缎面垂坠宽松长袖衬衫
+category: 上装
+status: off_shelf
+price_cny: 189
+stock: 0
+season: 春秋
+updated_at: '2026-07-25'
+size_chart:
+  basis: 成衣尺寸
+  unit: cm
+  rows:
+  - size: S
+    bust: 98
+    waist: null
+    hip: null
+    length: 64
+    shoulder: 38
+    sleeve: 56
+  - size: M
+    bust: 102
+    waist: null
+    hip: null
+    length: 66
+    shoulder: 39
+    sleeve: 57
+  - size: L
+    bust: 106
+    waist: null
+    hip: null
+    length: 68
+    shoulder: 40
+    sleeve: 58
+  - size: XL
+    bust: 110
+    waist: null
+    hip: null
+    length: 70
+    shoulder: 41
+    sleeve: 59
+material:
+  composition:
+  - fiber: 聚酯纤维
+    percent: 100
+  lining: null
+  weight_gsm: 110
+  elasticity: 无弹
+  thickness: 轻薄
+  care: null
+fit:
+  silhouette: 宽松
+  waistline: 无腰身
+  fit_type: 宽松
+  notes: 仿真丝缎面，垂坠感强，已下架停售
+variants:
+- color: 香槟
+  sizes:
+    S: 0
+    M: 0
+    L: 0
+    XL: 0
+- color: 雾灰
+  sizes:
+    S: 0
+    M: 0
+    L: 0
+    XL: 0
+source: sample
+sample_data: true

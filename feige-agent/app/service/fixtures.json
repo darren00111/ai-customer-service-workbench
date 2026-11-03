@@ -1,0 +1,210 @@
+{
+  "demo_billiards": {
+    "name": "模拟 · 台球用品店",
+    "business": {
+      "category": "台球用品",
+      "shipping": {
+        "lead_time": "现货通常48小时内发出",
+        "origin": "广东",
+        "carriers": [
+          "中通"
+        ],
+        "delivery_by_region": {
+          "湖南": "揽收后2–4天",
+          "广东": "揽收后1–2天"
+        }
+      },
+      "promotions": {
+        "note": "满299元减20元，不与其他店铺优惠叠加"
+      },
+      "policies": {
+        "return_policy": "符合条件的未使用商品支持七天无理由退货，具体条件以商品页面为准"
+      }
+    },
+    "products": [
+      {
+        "product_id": "CUE-B",
+        "title": "入门黑色台球杆",
+        "aliases": [
+          "黑杆",
+          "黑棍",
+          "入门杆"
+        ],
+        "price": 199,
+        "stock": 8,
+        "attributes": {
+          "长度": "145cm",
+          "材质": "枫木"
+        },
+        "source": "sample",
+        "sample_data": true,
+        "product_type": "球杆"
+      },
+      {
+        "product_id": "CUE-W",
+        "title": "白色台球杆",
+        "aliases": [
+          "白杆",
+          "白棍"
+        ],
+        "price": 239,
+        "stock": 0,
+        "attributes": {
+          "长度": "145cm",
+          "材质": "枫木"
+        },
+        "source": "sample",
+        "sample_data": true,
+        "product_type": "球杆"
+      },
+      {
+        "product_id": "CHALK",
+        "title": "蓝色巧克粉",
+        "aliases": [
+          "巧粉",
+          "台球粉"
+        ],
+        "price": 29,
+        "stock": 30,
+        "attributes": {
+          "包装": "盒装"
+        },
+        "source": "sample",
+        "sample_data": true,
+        "product_type": "巧克粉"
+      }
+    ],
+    "orders": {
+      "DEMO-ORDER-1": {
+        "status": "运输中，已到长沙转运中心",
+        "delivery_estimate": "承运商预计明日送达，可能随运输情况调整",
+        "dispatch_estimate": "已经发出"
+      }
+    },
+    "examples": [
+      "黑棍几钱，还有货吗",
+      "两百以内推荐一根",
+      "黑杆和白杆比较一下",
+      "啥时候到",
+      "湖南",
+      "寄湖南，周五比赛来得及不",
+      "不是问哪里发货，我问什么时候到",
+      "还没买，想了解退货规则",
+      "我要退货",
+      "这根打着会不会震手"
+    ]
+  },
+  "demo_fashion": {
+    "name": "模拟 · 服装店",
+    "business": {
+      "category": "服装",
+      "shipping": {
+        "lead_time": "现货48小时内发货",
+        "origin": "浙江",
+        "delivery_by_region": {
+          "广东": "揽收后2–3天"
+        }
+      },
+      "policies": {
+        "return_policy": "符合条件、吊牌完好且未穿洗的商品支持七天无理由退货"
+      }
+    },
+    "products": [
+      {
+        "product_id": "TEE",
+        "title": "宽松棉T恤",
+        "aliases": [
+          "短袖",
+          "棉T"
+        ],
+        "price": 89,
+        "stock": 12,
+        "attributes": {
+          "材质": "棉100%",
+          "尺寸": "M码成衣胸围104cm；L码108cm"
+        },
+        "source": "sample",
+        "sample_data": true,
+        "product_type": "T恤"
+      },
+      {
+        "product_id": "PANTS",
+        "title": "高腰阔腿裤",
+        "aliases": [
+          "裤子",
+          "阔腿裤"
+        ],
+        "price": 159,
+        "stock": 0,
+        "attributes": {
+          "材质": "聚酯纤维95%，氨纶5%"
+        },
+        "source": "sample",
+        "sample_data": true,
+        "product_type": "阔腿裤"
+      }
+    ],
+    "examples": [
+      "棉T多少米",
+      "这个掉色不",
+      "换款",
+      "裤子有没",
+      "收到就开线了，我要退货"
+    ]
+  },
+  "demo_home": {
+    "name": "模拟 · 家居店",
+    "business": {
+      "category": "家居",
+      "shipping": {
+        "origin": "广东",
+        "lead_time": "通常24小时内发货",
+        "delivery_by_region": {
+          "广东": "揽收后1–2天"
+        }
+      }
+    },
+    "products": [
+      {
+        "product_id": "LAMP-A",
+        "title": "阅读台灯",
+        "aliases": [
+          "小灯",
+          "阅读灯"
+        ],
+        "price": 99,
+        "stock": 3,
+        "attributes": {
+          "规格": "8W，USB供电"
+        },
+        "source": "sample",
+        "sample_data": true,
+        "product_type": "台灯"
+      },
+      {
+        "product_id": "LAMP-B",
+        "title": "落地灯",
+        "aliases": [
+          "大灯"
+        ],
+        "price": {
+          "value": 299,
+          "expires_at": "2020-01-01",
+          "source": "过期示例活动"
+        },
+        "stock": 2,
+        "attributes": {
+          "规格": "12W"
+        },
+        "source": "sample",
+        "sample_data": true,
+        "product_type": "落地灯"
+      }
+    ],
+    "examples": [
+      "小灯什么规格",
+      "大灯多少钱",
+      "小灯多少钱，还有货吗，哪里发货，啥时候到"
+    ]
+  }
+}

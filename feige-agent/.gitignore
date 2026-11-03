@@ -1,0 +1,23 @@
+.venv/
+__pycache__/
+*.pyc
+
+# Browser profiles contain login cookies and must never be committed or packaged.
+data/chrome-profile/
+data/test-profile/
+data/profiles/
+
+# Per-shop runtime state and customer conversation logs.
+data/stores/
+data/logs/
+data/reception/
+data/conversations.json
+data/notifications.jsonl
+
+_*.txt
+_tmp/
+build/
+dist/
+releases/
+*.spec
+build*.log

@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>接入与试聊 · 多平台智能客服</title>
+  <link rel="icon" href="../assets/app-icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="workbench.css">
+</head>
+<body>
+  <header>
+    <div><p class="eyebrow">多平台智能客服</p><h1>试聊与改正</h1></div>
+    <span class="badge" id="modelBadge">正在读取模型状态</span>
+  </header>
+  <main>
+    <p class="notice">先试问一句。答错了，直接在右侧改正。这里的试聊不会发给顾客。</p>
+    <p id="bridgeHint" role="status">正在连接桌面程序…</p>
+    <details class="card" id="modelSettings"><summary>千问模型设置</summary>
+      <form id="modelForm">
+        <label>模型名称<input id="modelName" value="qwen3.8-flash" maxlength="105" required></label>
+        <label>百炼接口地址<input id="modelEndpoint" type="url" required placeholder="https://业务空间ID.cn-beijing.maas.aliyuncs.com/compatible-mode/v1"></label>
+        <label>API Key<input id="modelKey" type="password" autocomplete="off" maxlength="2000" placeholder="首次填写；已有密钥时留空保持原密钥"></label>
+        <label class="check"><input id="modelEnabled" type="checkbox" checked>启用千问语义理解（按百炼实际调用计费）</label>
+        <div class="button-row"><button type="submit">保存本机配置</button><button id="testModel" type="button" class="secondary">验证连接</button></div>
+      </form>
+      <p>密钥由当前 Windows 账户加密保存，不显示明文，也不会随体验包分发。取消启用可使用有限的离线规则试聊；离线模式禁止新版引擎自动发送。</p>
+      <p id="modelStatus" role="status">尚未读取配置。</p>
+    </details>
+    <section class="shop-controls" aria-label="选择或创建店铺">
+      <label>当前店铺<select id="storeSelect" disabled></select></label>
+      <details><summary>接入新店铺</summary>
+        <form id="createForm">
+          <label>店铺标识<input id="newStoreId" pattern="[A-Za-z0-9_-]{1,64}" maxlength="64" required placeholder="例如 my_shop"></label>
+          <label>店铺名称<input id="newStoreName" maxlength="100" required placeholder="例如 星光台球用品"></label>
+          <label>经营平台<select id="newPlatform"><option value="feige">抖店飞鸽</option><option value="taobao">淘宝／天猫（千牛待适配）</option><option value="pinduoduo">拼多多（网页连接待联调）</option><option value="xiaohongshu">小红书店铺（消息待接入）</option></select></label>
+          <label>商家标识<input id="newMerchantId" value="local" pattern="[A-Za-z0-9_-]{1,64}" maxlength="64" required></label>
+          <p>同一商家的多平台店铺填写相同商家标识，方便共用商品属性；每家店铺标识必须唯一。</p>
+          <label>店铺品类<select id="newCategory"><option>通用零售</option><option>台球用品</option><option>服装</option><option>家居</option><option>数码用品</option></select></label>
+          <button type="submit">创建店铺</button>
+        </form>
+        <p>创建后自动发送默认关闭。拼多多可进入网页连接联调；淘宝目前可检查千牛客户端结构，小红书消息待接入。</p>
+      </details>
+    </section>
+    <section class="readiness" aria-label="接入检查" id="readiness"></section>
+    <section class="card extra-panels" aria-labelledby="multiTitle">
+      <h2 id="multiTitle">多平台资料与会话准备</h2>
+      <p id="connectionStatus" role="status">选择店铺后显示平台连接能力。</p>
+      <details id="pilotPanel" hidden><summary>淘宝／拼多多连接联调</summary>
+        <p>先用测试会话核对登录身份、顾客、原文与收发回显。当前为开发验收流程，尚未开放正式自动接待。</p>
+        <div>
+          <div class="button-row"><button type="button" class="secondary" id="pilotLogin">打开平台登录窗口</button><button type="button" id="pilotInspect">检查并连接已登录账号</button><button type="button" class="secondary" id="pilotStop">停止连接</button></div>
+          <p id="pilotIdentity">请自行登录，在客服页面检查连接。</p>
+          <label class="check"><input type="checkbox" id="pilotReviewed">我已核对当前店铺、客服账号和顾客，聊天原文读取正确</label>
+          <div class="button-row"><button type="button" id="pilotBind">确认绑定并开始观察</button><button type="button" class="secondary" id="pilotPoll">同步观察到的消息</button></div>
+          <p id="pddPilot" hidden>拼多多：首次打开独立窗口时会准备消息监听，登录并绑定后再接收测试消息。复用已打开的客服页而未收到消息时，请刷新一次。绑定后打开会话可记录页面返回的历史，历史仅作上下文，不会补发旧消息；发现消息缺失或身份变化会停止接待，需在原平台核对后重新连接。</p>
+          <p id="historyCaptureStatus" hidden aria-live="polite"></p>
+        </div>
+        <div id="taobaoPilot" hidden><button type="button" id="chooseQianniuClient" class="secondary">选择千牛安装位置</button><button type="button" id="inspectQianniu" class="secondary">千牛兼容性诊断</button><p>淘宝通过千牛桌面客户端进入商家工作台。无法打开时，请选择千牛安装目录中的 AliWorkbench.exe；登录后进入接待中心。逐条消息的作者与标识尚待真实客户端联调，通过后再开放发送。</p></div>
+        <p id="pilotStatus" role="status">尚未连接。</p>
+        <div id="productCapturePanel" hidden>
+          <p>在已绑定的拼多多客服页面打开商品列表或商品详情，工具会读取该页面返回的资料。核对并启用后，资料才会用于回复。</p>
+          <button type="button" class="secondary" id="captureProducts">读取已采集商品并预览</button>
+          <p id="productCaptureStatus" role="status">尚未采集商品。</p>
+        </div>
+        <form id="channelMonitorForm">
+          <label>持续接待方式<select id="channelMonitorMode"><option value="draft">持续读取并自动生成草稿</option><option value="automatic">指定测试顾客的自动收发验收</option></select></label>
+          <label>自动收发的测试顾客<select id="monitorConversation"><option value="">请先采集一条真实测试消息</option></select></label>
+          <label class="check"><input id="monitorReviewed" type="checkbox" required>我已核对绑定的店铺；若选择自动收发，所选会话是我指定的测试顾客</label>
+          <div class="button-row"><button type="submit">开始持续接待检查</button><button type="button" class="secondary" id="stopChannelMonitor">停止持续接待</button></div>
+          <p>自动收发验收只对所选测试顾客生效，其余会话保留草稿。售后进入本机人工待办；全店接待需在下方单独开启。</p>
+        </form>
+        <p id="channelMonitorStatus" role="status">持续接待尚未启动。</p>
+        <details id="storeAutomationPanel"><summary>日常全店自动接待</summary>
+          <p>先核对本店商品、价格和政策，使用指定测试顾客完成一次模型自动回复并核对发送结果，再开启本店接待。售后由人工在原平台处理，资料不足时工具会补问。</p>
+          <p id="storeAutomationStatus" role="status">本店全店自动接待默认关闭。</p>
+          <form id="storeAutomationForm">
+            <label class="check"><input type="checkbox" id="storeAutomationReviewed" required>我已核对本店测试结果，确认在当前店铺开启全店自动接待</label>
+            <div class="button-row"><button type="submit" id="enableStoreAutomation">开启本店全店自动接待</button><button type="button" class="secondary" id="disableStoreAutomation">关闭全店自动接待</button></div>
+          </form>
+          <p>关闭后取消后续发送；已经发出的消息需在原平台核对。软件重启后保持停止，点击主窗口“启动店铺”再恢复接待。</p>
+        </details>
+        <details><summary>本机连接检查详情</summary><pre id="pilotOutput">尚未检查。</pre></details>
+      </details>
+      <details id="commonPanel"><summary>同款商品关联与共用属性</summary>
+        <p>先在各店启用商品，再关联同款。共用属性生成待启用版本；本店已有属性优先保留，价格、库存、优惠和政策由各店独立维护。</p>
+        <div class="columns">
+          <form id="commonForm">
+            <label>商家内部商品标识<input id="commonKey" pattern="[A-Za-z0-9_-]{1,64}" maxlength="64" required placeholder="例如 CUE_BLACK_01"></label>
+            <label>共用属性（JSON）<textarea id="commonContent" rows="4" maxlength="150000" required placeholder='{"材质":"枫木","保养方法":"用干软布擦拭"}'></textarea></label>
+            <label>资料来源<input id="commonSource" maxlength="200" required placeholder="例如 厂商核准规格表"></label>
+            <label class="check"><input type="checkbox" id="commonReviewed" required>我已核对这些属性适用于同款商品</label>
+            <button type="submit">保存共用商品版本</button>
+          </form>
+          <form id="linkForm">
+            <label>本商家的共用商品版本<select id="commonSelect"></select></label>
+            <pre id="commonPreview">选择共用商品后显示全部属性。</pre>
+            <label>对应本店商品<select id="localProductSelect"></select></label>
+            <label class="check"><input type="checkbox" id="linkReviewed" required>我确认这是同款商品，将预览并核对生成的版本</label>
+            <button type="submit">关联并生成待启用版本</button>
+            <pre id="commonLinks">暂无关联。</pre>
+          </form>
+        </div>
+      </details>
+      <details id="channelPanel"><summary>店铺会话与回复草稿</summary>
+        <p>查看本店已观察的会话、原文和草稿。导入文件仅供检查，不会发送；实时会话按已开启的接待方式处理。售后暂停自动接待，由人工在原平台处理。</p>
+        <form id="channelImportForm">
+          <label>选择当前店铺的 JSON 会话文件<input id="channelFile" type="file" accept=".json"></label>
+          <label>或粘贴会话<textarea id="channelContent" rows="4" maxlength="5000000" required></textarea></label>
+          <details><summary>会话格式</summary><pre>{"store_id":"请填当前店铺标识","conversations":[{"conversation_id":"客户会话01","messages":[{"message_id":"消息01","role":"buyer","content":"这款多少钱"}]}]}</pre><p>消息按时间排列，客服角色填 agent。增量导入需要稳定的消息标识。导入前请移除无关个人信息。</p></details>
+          <button type="submit">导入本店会话</button>
+        </form>
+        <label>本店会话（导入或试接入采集）<select id="channelSelect"></select></label>
+        <div class="button-row"><button type="button" class="secondary" id="viewChannel">查看原文与草稿</button><button type="button" id="draftChannel">生成回复草稿</button><button type="button" class="secondary" id="pauseChannel">暂停／恢复本地草稿</button></div>
+        <pre id="channelView">尚未导入会话。</pre>
+        <div id="uncertainDeliveryPanel" hidden>
+          <p>这轮发送结果未确认。请在原平台核对并人工处理，工具不会自动重发。</p>
+          <label class="check"><input type="checkbox" id="uncertainReviewed">我已在原平台核对并处理完这轮咨询</label>
+          <button type="button" class="secondary" id="closeUncertainDelivery">记录人工处理并关闭本轮</button>
+          <p>关闭不代表原发送成功，不计为自动解决或成交样本。旧回复永远不会重发，后续新咨询才能继续接待。</p>
+        </div>
+        <div id="liveSendPanel" hidden>
+          <label class="check"><input type="checkbox" id="liveSendReviewed">我已核对当前顾客和本轮完整草稿，确认发送这条回复</label>
+          <button type="button" id="sendLiveDraft">审核并发送本轮草稿</button>
+          <p>仅对当前绑定店铺采集的实时文字消息开放。发送结果未确认时，请在原平台核对；工具不会自动重发。</p>
+        </div>
+      </details>
+    </section>
+    <div class="columns">
+      <section class="card" aria-labelledby="chatTitle">
+        <div class="section-title"><h2 id="chatTitle">模拟接待</h2><button type="button" class="secondary" id="resetChat">开始新会话</button></div>
+        <p id="examplesLabel">点选一个示例开始，也可以自己输入。</p>
+        <div class="examples" id="examples"></div>
+        <label class="check"><input type="checkbox" id="demoOrder">关联模拟订单（仅台球模拟店可用）</label>
+        <div id="messages" role="log" aria-label="试聊记录" aria-live="polite"></div>
+        <form id="chatForm">
+          <label for="question">顾客消息</label>
+          <textarea id="question" rows="2" maxlength="8000" placeholder="例如：黑棍几钱，还有货吗" required></textarea>
+          <button id="chatSend" type="submit">发送到试聊</button>
+        </form>
+        <details><summary>本轮理解与回答依据</summary><pre id="decision">试聊后显示。</pre></details>
+        <details><summary>会话摘要与原文</summary>
+          <pre id="memorySummary">试聊后显示已确认条件和原文引用。</pre>
+          <button type="button" class="secondary" id="transcriptButton">查看本会话原文</button>
+          <button type="button" class="secondary" id="olderTranscript" disabled>载入更早原文</button>
+          <pre id="transcript">原文按当前店铺与会话独立保存。</pre>
+        </details>
+      </section>
+      <section class="card" aria-labelledby="knowledgeTitle">
+        <h2 id="knowledgeTitle">店铺资料</h2>
+        <p>导入资料先生成待启用版本。查看完整内容并核对后启用，也可以选择历史版本回退。</p>
+        <form id="importForm">
+          <label>资料类型<select id="importKind">
+            <option value="products">商品资料（JSON / CSV）</option><option value="business">店铺政策（JSON）</option>
+            <option value="faq">常见问答（JSON）</option><option value="history">历史对话（JSON，仅生成候选）</option>
+          </select></label>
+          <label>资料来源<input id="source" required maxlength="200" placeholder="例如 商家商品中心导出 · 10月17日"></label>
+          <label>选择本地文件<input id="importFile" type="file" accept=".json,.csv"></label>
+          <label>或粘贴资料<textarea id="importContent" rows="5" maxlength="5000000" required spellcheck="false"></textarea></label>
+          <button type="submit">检查并生成版本</button>
+        </form>
+        <details><summary>查看导入格式示例</summary>
+          <p>商品按完整列表更新，每件商品需有唯一标识和名称。价格、库存可附来源与有效期；CSV 的 aliases 使用 | 分隔。</p>
+          <pre>[{"product_id":"A01","title":"台球杆","aliases":["黑杆"],"price":{"value":199,"source":"商品中心","expires_at":"2030-01-01"},"stock":8,"attributes":{"长度":"145cm"}}]</pre>
+          <p>店铺政策：</p><pre>{"shipping":{"lead_time":"48小时内发货","origin":"广东","delivery_by_region":{"湖南":"揽收后2–4天"}},"policies":{"return_policy":"请填本店核准政策"},"promotions":{"note":"请填当前公开优惠"}}</pre>
+          <p>常见问答：</p><pre>[{"question":"能刻字吗","answer":"请填商家核准答案","aliases":["可以刻字吗"]}]</pre>
+          <p>历史对话：</p><pre>[{"messages":[{"role":"buyer","content":"能刻字吗"},{"role":"agent","content":"不提供刻字服务"}]}]</pre>
+          <p>历史导入会合并连续的顾客消息和连续的客服答复，保留消息位置引用；候选仍需核对，不能据此认定原回复正确。请在导入前移除个人信息。</p>
+        </details>
+        <label>知识版本<select id="revisionSelect"><option value="">暂无版本</option></select></label>
+        <button class="secondary" id="previewButton" type="button">预览所选版本</button>
+        <pre id="preview" tabindex="0" aria-label="完整知识预览">选择一个版本查看内容。</pre>
+        <label class="check"><input type="checkbox" id="reviewed">我已核对预览的全部内容，确认可作为本店答复依据</label>
+        <button id="activateButton" type="button" disabled>启用预览版本</button>
+        <button id="evaluatePreview" type="button" class="secondary">回归验证预览版本</button>
+        <pre id="evaluation">人工纠错生成的版本需先通过回归验证，再确认启用。</pre>
+        <details><summary>发布记录与回退</summary>
+          <p>每次发布和回退都会留下记录。回退只能恢复曾经生效的版本，尚未发送的旧草稿会重新校验，已发送的历史回复不会被修改。</p>
+          <label>回退的资料类型<select id="rollbackKind"><option value="products">商品资料</option><option value="business">店铺政策</option><option value="faq">常见问答</option></select></label>
+          <label>回退原因<input id="rollbackReason" maxlength="500" placeholder="例如 新版材质填错，先恢复上一版"></label>
+          <button type="button" id="rollbackButton" class="secondary">回退到上一生效版本</button>
+          <pre id="publishHistory">暂无发布记录。</pre>
+        </details>
+        <details><summary>待补充的资料与问题</summary><pre id="gaps">暂无记录。</pre></details>
+      </section>
+    </div>
+    <section class="card" id="salesPanel" aria-labelledby="salesTitle">
+      <h2 id="salesTitle">店铺接待与持续学习</h2>
+      <p>按本店需求调整推荐重点和回复方式。只使用已核对的商品、优惠和政策；顾客消息不能修改经营规则。</p>
+      <form id="salesForm" class="columns">
+        <div>
+          <label class="check"><input id="salesEnabled" type="checkbox">启用本店接待策略</label>
+          <label>接待目标<select id="salesGoal"><option value="answer_first">先把问题回答清楚</option><option value="help_choose">回答后帮助顾客选购</option></select></label>
+          <label>回复语气<select id="salesTone"><option value="concise">简洁直接</option><option value="warm">亲切说明</option></select></label>
+          <label>选购引导<select id="salesNext"><option value="none">回答后等待顾客</option><option value="offer_help">适时询问是否需要继续选款或核对规格</option></select></label>
+          <label>本店优先推荐商品<select id="salesPreferred" multiple size="3" aria-describedby="salesPreferredHint"></select></label>
+          <p id="salesPreferredHint">仍先检查顾客所需品类、预算和库存，不会推荐不合适的优先商品。</p>
+          <label>推荐时重点说明的属性<input id="salesFocus" placeholder="例如 材质、长度"></label>
+        </div>
+        <div>
+          <label>持续学习方式<select id="salesMode"><option value="observe">记录问题和结果，保持当前方式</option><option value="assist">对照两种已允许的选购引导，供我评估</option><option value="auto">数据充分时自动选择已允许的引导方式</option></select></label>
+          <label>每种方式至少观察的会话数<input id="salesSamples" type="number" min="20" max="1000" value="30" required></label>
+          <label>每段会话的成交观察天数<input id="salesDays" type="number" min="1" max="30" value="7" required></label>
+          <p>只有已确认发送的真实接待，以及商家确认完整覆盖观察期的订单结果，才能参与自动调整。模拟试聊、手工下单标记和缺失订单均不能作为成交提升证据。样本不足时保留当前策略或继续对照。</p>
+          <button type="submit">保存并应用本店策略</button>
+          <button id="refreshLearning" type="button" class="secondary">整理学习建议</button>
+        </div>
+      </form>
+      <p id="salesSummary" role="status"></p>
+      <div id="salesInsights" class="record-list"></div>
+      <p>经营策略变更会保存成知识版本，可以在“店铺资料”中预览和回退。复杂问题的纠正会生成待核对知识，默认不擅自发布。</p>
+    </section>
+    <section class="readiness" id="learningMetrics" aria-label="本地接待记录统计"></section>
+    <div class="columns extra-panels">
+      <section class="card" aria-labelledby="syncTitle">
+        <h2 id="syncTitle">资料持续更新</h2>
+        <p>选择商家定期导出的本地资料文件。文件变化后自动生成版本；只有明确选为可信来源的商品更新可自动启用。这里尚未连接店铺后台接口。</p>
+        <form id="syncForm">
+          <label>持续更新的文件<input id="syncPath" readonly placeholder="先选择本地 JSON 或 CSV 文件"></label>
+          <button id="chooseSyncFile" type="button" class="secondary">选择资料文件</button>
+          <label>资料类型<select id="syncKind"><option value="products">商品及库存</option><option value="business">店铺政策</option><option value="faq">常见问答</option><option value="history">历史对话</option><option value="outcomes">成交与退款结果</option></select></label>
+          <label>更新方式<select id="syncMode"><option value="merge">增量合并，保留其他资料</option><option value="replace">完整替换所选资料类型</option></select></label>
+          <label>检查间隔（秒）<input id="syncInterval" type="number" min="10" max="86400" value="60" required></label>
+          <label class="check"><input id="syncAuto" type="checkbox">该文件是可信商品来源，允许校验通过的商品更新自动启用</label>
+          <label class="check"><input id="syncOutcomesTrusted" type="checkbox" disabled>我已确认该成交文件来自本店订单后台，可用于评估；完整覆盖的时间范围以文件中的声明为准</label>
+          <button type="submit">添加持续更新来源</button>
+        </form>
+        <p>工作台打开期间会定时检查；实际接待引擎处理新消息前也会检查到期来源。增量删除需在文件中显式填写 delete_ids。</p>
+        <button type="button" id="syncNow" class="secondary">立即检查文件变化</button>
+        <div id="syncList" class="record-list"></div>
+        <pre id="syncReport">尚未检查。</pre>
+      </section>
+      <section class="card" aria-labelledby="correctionTitle">
+        <h2 id="correctionTitle">改正回复</h2>
+        <p>填好后保存，系统会自动检查并更新。</p>
+        <form id="quickCorrectionForm">
+          <label>哪条答错了<select id="quickInteraction"><option value="">先在左侧问一个问题</option></select></label>
+          <p id="quickOriginal" class="muted">试聊后可在这里改正。</p>
+          <label>改什么<select id="quickKind"><option value="faq">答案说错了</option><option value="stock">库存不对</option><option value="price">价格不对</option></select></label>
+          <label>适用商品<select id="quickProduct"><option value="">本店通用</option></select></label>
+          <label><span id="quickValueLabel">应该怎么答</span><textarea id="quickValue" rows="3" maxlength="2000" required placeholder="直接写正确答案"></textarea></label>
+          <button id="quickSave" type="submit" disabled>保存并生效</button>
+          <p id="quickResult" role="status"></p>
+        </form>
+        <section id="quickCards" hidden>
+          <h3>还有这些资料需要补充</h3>
+          <label>待补问题<select id="quickCardSelect"></select></label>
+          <p id="quickCardHint" class="muted"></p>
+          <form id="quickCardForm"><label>正确内容<textarea id="quickCardValue" rows="2" maxlength="2000" required></textarea></label><button type="submit">保存并使用</button></form>
+        </section>
+        <p id="quickCardResult" role="status"></p>
+        <details id="advancedCorrection"><summary>更多纠错设置</summary>
+        <form id="correctionForm">
+          <label>需要纠正的接待<select id="interactionSelect"><option value="">先完成一次试聊</option></select></label>
+          <label>正确的处理方式<select id="expectedAction"><option value="reply">直接答复</option><option value="ask_followup">补充询问</option><option value="handoff">转人工</option></select></label>
+          <label>答复必须包含的正确内容<textarea id="correctionText" rows="3" maxlength="2000" required placeholder="例如：本店暂不提供刻字服务"></textarea></label>
+          <button type="submit">保存纠错案例</button>
+        </form>
+        <label>已保存的案例<select id="feedbackSelect"><option value="">暂无纠错案例</option></select></label>
+        <div class="button-row">
+          <button type="button" id="proposeCorrection" class="secondary">生成候选知识</button>
+          <button type="button" id="runRegression" class="secondary">验证当前知识</button>
+          <button type="button" id="retireFeedback" class="secondary">停用所选旧案例</button>
+          <button type="button" id="exportCases" class="secondary">导出回归案例</button>
+        </div>
+        <label class="check"><input id="useModelEvaluation" type="checkbox">使用当前千问模型验证（会产生实际API调用；不勾选则为离线规则回归）</label>
+        <p>“停用”保留原记录，适用于经营政策已改变、原验收答案不再适用的情况。</p>
+        <details><summary>可复制的评测案例</summary><pre id="regressionExport">导出后显示，可复制给后续模型评测使用；分享前请再核对个人信息。</pre></details>
+        <h3>人工改判</h3>
+        <p>纠正上面所选接待的判断。改判立即作废该会话的旧草稿，保留未被修改的已确认条件；保存改判不会发送给顾客。</p>
+        <form id="overrideForm">
+          <label>纠正意图（可选）<select id="overrideIntent"><option value="">不修改</option><option value="faq">普通咨询</option><option value="policy">售前政策咨询</option><option value="price">价格</option><option value="inventory">库存</option><option value="details">商品详情</option><option value="delivery">送达时效</option><option value="after_sale">售后处理</option></select></label>
+          <label>商品归属（可选）<select id="overrideProduct"><option value="">不修改</option></select></label>
+          <label>正确的事实或答案（可选）<textarea id="overrideAnswer" rows="2" maxlength="2000"></textarea></label>
+          <label>后续动作<select id="overrideAction"><option value="">不修改</option><option value="reply">直接答复</option><option value="ask_followup">补问</option><option value="handoff">人工接管</option><option value="keep_draft">保留草稿</option><option value="resume">恢复自动接待</option></select></label>
+          <label>原因<select id="overrideReason"><option value="misunderstood">理解错误</option><option value="knowledge_missing">知识缺失</option><option value="stale">资料过期</option><option value="conflict">资料冲突</option><option value="platform_read">平台读取错误</option><option value="wording">表达不合适</option></select></label>
+          <label>作用范围<select id="overrideScope"><option value="session_only">仅用于本次</option><option value="store_candidate">生成本店知识候选（需审核、复测后发布）</option><option value="shared_suggestion">建议更新共用知识（只记录建议）</option></select></label>
+          <label class="check"><input id="overrideSpecial" type="checkbox">这是一次特殊优惠或承诺（只作用于本会话，不能写成本店政策）</label>
+          <label>平台会话核对（自动关联原记录，可留空）<input id="overrideConversation" maxlength="200" placeholder="无需手填；填写时必须与原记录一致"></label>
+          <button type="submit">保存改判（不发送）</button>
+        </form>
+        <pre id="overrideResult">改判后显示修改前后的判断与回复预览。</pre>
+        <h3>问题卡片</h3>
+        <p>漏答、商品关联、知识过期、改判等问题汇总在这里。补充资料后需复测原问题并发布，再由新的会话验证，才算补全；只上传或填写答案不算完成。售后待办在主窗口处理，与这里的后台补资料任务不同。</p>
+        <p id="cardSummary" role="status"></p>
+        <label>选择卡片<select id="cardSelect"><option value="">暂无问题卡片</option></select></label>
+        <pre id="cardDetail" tabindex="0">选择卡片查看原问题、已回复内容、缺口与处理记录。</pre>
+        <details><summary>处理所选卡片</summary>
+          <div class="columns">
+            <div>
+              <label>负责人<input id="cardOwner" maxlength="60"></label>
+              <button type="button" class="secondary" data-card-action="assign">分配</button>
+              <fieldset><legend>常用资料补充</legend>
+                <label>补充方式<select id="cardFormType"><option value="faq">常见问答</option><option value="attribute">商品属性</option><option value="shipping">发货规则</option></select></label>
+                <div id="cardFormFaq"><label>标准问题<input id="cardFormQuestion" maxlength="2000"></label></div>
+                <div id="cardFormAttribute" hidden><label>本店商品<select id="cardFormProduct"></select></label><label>属性名称<input id="cardFormField" maxlength="60" placeholder="例如 材质"></label></div>
+                <div id="cardFormShipping" hidden><label>规则<select id="cardFormShippingField"><option value="lead_time">备货／发货准备时间</option><option value="origin">发货地</option></select></label></div>
+                <label>已核对的内容<textarea id="cardFormValue" rows="3" maxlength="2000" placeholder="填写本店确认的信息"></textarea></label>
+                <label>资料来源<input id="cardFormSource" maxlength="200" placeholder="例如 商品规格表、店主确认的发货安排"></label>
+                <button type="button" data-card-action="fill_form">保存为待复测资料</button>
+                <p>保存只生成候选，不会立即改变正式回复。继续复测、预览和确认发布。</p>
+              </fieldset>
+              <details><summary>其他资料格式（高级）</summary>
+              <label>补充资料类型<select id="cardKind"><option value="products">商品资料（增量 upserts）</option><option value="business">店铺政策（增量对象）</option><option value="faq">常见问答（列表）</option></select></label>
+              <label>补充内容（JSON）<textarea id="cardContent" rows="4" spellcheck="false" placeholder='{"upserts":[{"product_id":"A1","attributes":{"材质":"枫木"}}]}'></textarea></label>
+              <button type="button" class="secondary" data-card-action="supplement">补充资料并生成候选</button>
+              </details>
+              <label>关联已有问答（序号）<input id="cardFaqIndex" type="number" min="0"></label>
+              <button type="button" class="secondary" data-card-action="link_existing">关联已有问答</button>
+              <label>关联本店商品<select id="cardProduct"><option value="">选择商品</option></select></label>
+              <button type="button" class="secondary" data-card-action="map_product">修正商品映射</button>
+            </div>
+            <div>
+              <label>复测变体与边界（JSON 列表，可空）<textarea id="cardVariants" rows="4" spellcheck="false" placeholder='[{"question":"白杆什么材质","product_id":"B1","expect":"not_answered"}]'></textarea></label>
+              <label class="check"><input id="cardUseModel" type="checkbox">使用当前千问模型复测（会产生实际调用）</label>
+              <button type="button" class="secondary" data-card-action="retest">复测候选版本</button>
+              <button type="button" class="secondary" data-card-action="unlink">解除候选关联</button>
+              <label>正确处理（纠正意图）<select id="cardExpected"><option value="reply">直接答复</option><option value="ask_followup">补问</option><option value="handoff">人工处理</option></select></label>
+              <label>答复须包含<input id="cardExpectedText" maxlength="2000"></label>
+              <button type="button" class="secondary" data-card-action="correct_intent">纠正意图并加入回归</button>
+              <label>合并到卡片编号<input id="cardMergeTarget" type="number" min="1"></label>
+              <button type="button" class="secondary" data-card-action="merge">合并重复问题</button>
+              <label>原因（不适用／转开发）<input id="cardReason" maxlength="500"></label>
+              <button type="button" class="secondary" data-card-action="not_applicable">不适用</button>
+              <button type="button" class="secondary" data-card-action="dev">转开发排查</button>
+            </div>
+          </div>
+          <p>复测通过后，在“店铺资料”中预览并启用卡片关联的版本即为发布。</p>
+        </details>
+        </details>
+      </section>
+    </div>
+    <details class="card merchant-catalog" id="merchantCatalog"><summary>查看已学会的资料</summary><div id="merchantKnowledge"></div></details>
+    <details class="card" id="advancedTools"><summary>更多设置与排查</summary><p class="muted">连接、资料导入和检查工具在这里，日常试聊与纠错无需操作。</p></details>
+    <p id="feedback" role="status" aria-live="polite"></p>
+  </main>
+  <script src="workbench.js"></script>
+  <script src="merchant.js"></script>
+</body>
+</html>

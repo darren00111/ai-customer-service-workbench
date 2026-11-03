@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>飞鸽后台（本地模拟，用于引擎自测）</title>
+<style>
+  body{margin:0;font:14px/1.6 system-ui;display:flex;height:100vh}
+  #leftSide{width:240px;border-right:1px solid #ddd;padding:12px}
+  #main{flex:1;display:flex;flex-direction:column}
+  #topbar-left-info{padding:10px 14px;border-bottom:1px solid #ddd;font-weight:600}
+  #topbar-sec-container{padding:6px 14px;color:#888;font-size:12px}
+  #msgList{flex:1;overflow:auto;padding:14px}
+  .msgItemWrap{margin:8px 0;padding:8px 12px;border-radius:8px;background:#f4f4f4;white-space:pre-line}
+  .msgItemWrap.buyer{background:#eef4fb}
+  .msgItemWrap.system{background:#faf3e0;color:#854F0B}
+  #im-input-box{padding:8px 14px;border-top:1px solid #ddd}
+  textarea{width:100%;height:70px;font:14px/1.6 inherit;padding:8px;box-sizing:border-box}
+  #sendBtn{margin-top:6px;padding:6px 20px;border:1px solid #ccc;border-radius:6px;cursor:pointer;display:inline-block}
+</style>
+</head>
+<body>
+<div id="leftSide"><div style="font-weight:600">咨询商品</div><div id="consultProduct" style="color:#888;font-size:12px">暂无咨询商品</div></div>
+<div id="main">
+  <div id="topbar-left-info">热力台球</div>
+  <div id="topbar-sec-container">重复来访 · 现在是人工客服为您服务</div>
+  <div id="msgList"></div>
+  <div id="im-input-box"><span id="counter">0/800</span></div>
+  <textarea data-qa-id="qa-send-message-textarea" placeholder="请输入消息"></textarea>
+  <div><div id="sendBtn" data-qa-id="qa-send-message-button" role="button">发 送</div></div>
+</div>
+<script>
+/* 本地模拟页，只用于验证引擎代码路径。
+   真实飞鸽是 React 受控组件，其原生 setter 兼容性已在真实环境验证通过；
+   这里用简化实现，目的是把「代码正确性」与「真实环境登录」分开验证。 */
+var SEED = [
+  { r: 'buyer',  t: '你好在吗' },
+  { r: 'agent',  t: '亲，在的～您看中哪款了呢？\n10:02\n已读' },
+  { r: 'buyer',  t: '就是那个阔腿裤' },
+  { r: 'agent',  t: '亲，这款是高腰拖地阔腿西装裤，粘胶70%、聚酯纤维25%、氨纶5%。\n10:03\n已读' },
+  { r: 'system', t: '抖音电商智能客服已开启' },
+  { r: 'ai',     t: '亲亲～这款很百搭的哦🙂\n抖音电商智能客服发送' },
+  { r: 'buyer',  t: '160 95斤穿什么码' }
+];
+
+var list = document.getElementById('msgList');
+SEED.forEach(function (m, i) {
+  var d = document.createElement('div');
+  d.className = 'msgItemWrap ' + m.r;
+  d.setAttribute('data-qa-id', 'qa-message-warpper');
+  d.textContent = m.t;
+  list.appendChild(d);
+});
+
+var ta = document.querySelector('[data-qa-id="qa-send-message-textarea"]');
+var btn = document.querySelector('[data-qa-id="qa-send-message-button"]');
+var counterEl = document.getElementById('counter');
+var sent = [];
+
+ta.addEventListener('input', function () {
+  counterEl.textContent = ta.value.length + '/800';
+});
+
+btn.addEventListener('click', function () {
+  if (!ta.value) return;
+  if (window.__MOCK_DROP_CONFIRMATION) {
+    ta.value = '';
+    counterEl.textContent = '0/800';
+    return;
+  }
+  sent.push(ta.value);
+  var d = document.createElement('div');
+  d.className = 'msgItemWrap agent';
+  d.setAttribute('data-qa-id', 'qa-message-warpper');
+  d.textContent = ta.value + '\n10:05\n已读';
+  list.appendChild(d);
+  ta.value = '';
+  counterEl.textContent = '0/800';
+  window.__MOCK_SENT = sent;
+});
+
+window.__MOCK_SENT = sent;
+</script>
+</body>
+</html>

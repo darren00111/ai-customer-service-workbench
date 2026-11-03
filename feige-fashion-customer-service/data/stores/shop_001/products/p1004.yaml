@@ -1,0 +1,70 @@
+product_id: P1004
+sku_code: SKU-DWN2604
+title: 90白鸭绒短款连帽羽绒服 冬季加厚
+category: 外套
+status: pre_sale
+price_cny: 699
+stock: 0
+season: 冬季
+updated_at: '2026-09-22'
+size_chart:
+  basis: 成衣尺寸
+  unit: cm
+  rows:
+  - size: M
+    bust: 112
+    waist: null
+    hip: null
+    length: 62
+    shoulder: 48
+    sleeve: 60
+  - size: L
+    bust: 116
+    waist: null
+    hip: null
+    length: 64
+    shoulder: 49
+    sleeve: 61
+  - size: XL
+    bust: 120
+    waist: null
+    hip: null
+    length: 66
+    shoulder: 50
+    sleeve: 62
+  - size: 2XL
+    bust: 124
+    waist: null
+    hip: null
+    length: 68
+    shoulder: 51
+    sleeve: 63
+material:
+  composition:
+  - fiber: 锦纶
+    percent: 100
+  lining: 100%聚酯纤维，填充90%白鸭绒（充绒量120g）
+  weight_gsm: null
+  elasticity: 无弹
+  thickness: 加厚
+  care: null
+fit:
+  silhouette: 宽松
+  waistline: 短款
+  fit_type: 宽松
+  notes: 连帽设计，下摆抽绳，预售约15天发货
+variants:
+- color: 黑
+  sizes:
+    M: 0
+    L: 0
+    XL: 0
+    2XL: 0
+- color: 米白
+  sizes:
+    M: 0
+    L: 0
+    XL: 0
+    2XL: 0
+source: sample
+sample_data: true

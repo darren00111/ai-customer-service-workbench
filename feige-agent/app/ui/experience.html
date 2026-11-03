@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>立即体验 · 智能客服</title><link rel="icon" href="../assets/app-icon.svg"><link rel="stylesheet" href="experience.css"></head>
+<body>
+<a class="skip" href="#content">跳到体验内容</a>
+<main id="content">
+  <header><div><p class="eyebrow">智能客服 · 首次体验</p><h1>先试一遍，再接入店铺</h1><p>不需要店铺账号或模型密钥。约 5 分钟了解资料整理、试聊和纠错。</p></div><span class="badge">模拟体验</span></header>
+  <p class="notice">这里使用独立的体验资料，不会连接平台或发送顾客消息。当前为离线规则演示，不代表真实模型的理解效果。</p>
+  <ol class="steps" aria-label="体验步骤"><li id="step1" aria-current="step">1 选示例店铺</li><li id="step2">2 整理资料</li><li id="step3">3 试聊与纠错</li></ol>
+  <p id="status" role="status" aria-live="polite">正在连接桌面程序…</p>
+  <section class="card" aria-labelledby="sampleTitle">
+    <h2 id="sampleTitle">选择一家示例店铺</h2>
+    <div class="row"><label>示例店铺<select id="sampleStore" disabled><option value="demo_billiards">模拟 · 台球用品店</option></select></label><button id="prepare" disabled>整理示例资料并开始</button></div>
+    <p class="muted">系统会读取内置商品和经营规则，整理成可查询资料。无需手动填写知识条目。</p>
+    <div id="summary" class="summary" hidden></div>
+    <details><summary>使用自己的商品表试一试（可选）</summary>
+      <p>支持 CSV，表头为“商品名称、价格、库存”，可选“材质、规格、别名”。导入会替换当前示例商品，只用于本机模拟。请使用不含顾客信息的资料。</p>
+      <button id="downloadTemplate" class="secondary" type="button">下载商品表示例</button>
+      <label>选择商品 CSV<input id="productFile" type="file" accept=".csv,text/csv" disabled></label>
+      <button id="importProducts" class="secondary" disabled>整理商品表</button>
+    </details>
+  </section>
+  <section id="chatSection" class="card" aria-labelledby="chatTitle" hidden>
+    <div class="row between"><div><h2 id="chatTitle">像顾客一样问一句</h2><p class="muted">可以连续追问。看不懂的表达会补问，售后会提示人工处理。</p></div><button id="clearChat" class="secondary" type="button">开始新对话</button></div>
+    <div id="examples" class="examples" aria-label="试试这些问题"></div>
+    <div id="messages" class="messages" role="log" aria-label="模拟试聊记录" aria-live="polite"></div>
+    <form id="chatForm"><label>顾客问题<input id="question" maxlength="2000" required placeholder="例如：黑杆多少钱，还有货吗"></label><button id="ask" type="submit">查看模拟回复</button></form>
+    <details id="evidencePanel" hidden><summary>查看这次回复的依据</summary><div id="evidence"></div></details>
+  </section>
+  <section id="correctionSection" class="card" aria-labelledby="correctionTitle" hidden>
+    <h2 id="correctionTitle">教它回答一个新问题</h2>
+    <p>先试问“能刻字吗”。如果资料不足，在这里写下正确答复。系统会自动整理候选、复测，再请你确认。</p>
+    <p class="muted">价格、库存、优惠和售后处理不能用普通问答纠错覆盖，请在对应业务资料中修改。</p>
+    <p id="correctionQuestion" class="muted">先试聊一个问题，再填写它的正确答复。</p>
+    <form id="correctionForm"><label>这道问题的正确答复<textarea id="correctAnswer" rows="3" maxlength="2000" required placeholder="例如：本店暂不提供刻字服务"></textarea></label><button id="previewCorrection" type="submit" disabled>整理并检查答复</button></form>
+    <div id="correctionPreview" class="preview" hidden><h3>确认后，后续模拟回复会使用这条知识</h3><div id="correctionItems"></div><p id="correctionCheck"></p><button id="confirmCorrection" type="button">确认用于模拟回复</button></div>
+    <p id="correctionResult" role="status"></p>
+    <button id="rollback" type="button" class="secondary" hidden>撤销最近一次问答更新</button>
+  </section>
+  <footer><p>体验记录保存在本机，可关闭后继续。准备接入时，返回主窗口选择“添加店铺”；连接状态与知识准备分开显示。</p><p>本轮可验证：操作流程、知识变化与回退。尚未验证：平台兼容性、真实模型质量和新手独立完成率。</p></footer>
+</main><script src="experience.js"></script>
+</body></html>

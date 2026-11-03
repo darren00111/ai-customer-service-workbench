@@ -1,0 +1,10 @@
+--- list_targets ---
+  page: 飞鸽客服系统 | https://im.jinritemai.com/pc_seller_v2/main/workspace
+--- connect ---
+  已连接: https://im.jinritemai.com/pc_seller_v2/main/workspace
+--- location.href ---
+   'https://im.jinritemai.com/pc_seller_v2/main/workspace'
+--- 输入框 / 会话数探针 ---
+   {"title": "飞鸽客服系统", "buyer": "", "hasInput": false, "convCount": 0, "bodyLen": 739}
+--- probe ---
+   {"state": "not_logged_in", "detail": "看不到会话与输入框，可能未登录", "url": "https://im.jinritemai.com/pc_seller_v2/main/workspace", "info": {"title": "飞鸽客服系统", "buyer": "", "hasInput": false, "convCount": 0, "bodyLen": 739}}

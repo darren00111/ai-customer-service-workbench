@@ -1,0 +1,81 @@
+product_id: P1002
+sku_code: SKU-JNS2602
+title: 高腰直筒水洗牛仔长裤
+category: 裤装
+status: on_sale
+price_cny: 199
+stock: 302
+season: 四季
+updated_at: '2026-09-20'
+size_chart:
+  basis: 净尺寸
+  unit: cm
+  rows:
+  - size: '26'
+    bust: null
+    waist: 66
+    hip: 88
+    length: 98
+    shoulder: null
+    sleeve: null
+  - size: '27'
+    bust: null
+    waist: 70
+    hip: 92
+    length: 99
+    shoulder: null
+    sleeve: null
+  - size: '28'
+    bust: null
+    waist: 74
+    hip: 96
+    length: 100
+    shoulder: null
+    sleeve: null
+  - size: '29'
+    bust: null
+    waist: 78
+    hip: 100
+    length: 101
+    shoulder: null
+    sleeve: null
+  - size: '30'
+    bust: null
+    waist: 82
+    hip: 104
+    length: 102
+    shoulder: null
+    sleeve: null
+material:
+  composition:
+  - fiber: 棉
+    percent: 98
+  - fiber: 氨纶
+    percent: 2
+  lining: null
+  weight_gsm: 320
+  elasticity: 微弹
+  thickness: 常规
+  care: null
+fit:
+  silhouette: 直筒
+  waistline: 高腰
+  fit_type: 常规
+  notes: 水洗做旧，五袋款，前门襟拉链
+variants:
+- color: 深蓝
+  sizes:
+    '26': 24
+    '27': 30
+    '28': 36
+    '29': 22
+    '30': 18
+- color: 浅蓝
+  sizes:
+    '26': 20
+    '27': 28
+    '28': 30
+    '29': 16
+    '30': 0
+source: sample
+sample_data: true
