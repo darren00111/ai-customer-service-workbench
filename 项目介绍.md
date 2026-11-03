@@ -2,7 +2,7 @@
 
 **仅支持抖店飞鸽，最多接入 1 家店铺。** 基于原桌面版本裁剪，保留飞鸽登录、消息监听、模型回复、知识库和人工草稿。
 
-[下载 Windows 社区版安装包](https://github.com/darren00111/ai-customer-service-workbench/releases/download/v1.12.0-community/%E6%8A%96%E5%BA%97%E6%99%BA%E8%83%BD%E5%AE%A2%E6%9C%8D%E7%A4%BE%E5%8C%BA%E7%89%88-1.12.0-%E5%8D%95%E5%BA%97%E6%8A%96%E5%BA%97%E7%89%88.zip) · [社区版安装与使用](docs/社区版安装与使用.md)
+[社区版安装与使用](docs/社区版安装与使用.md)
 
 原有说明和教程视频继续保留。历史说明中的多平台、多店铺内容不属于本次社区版范围。
 
