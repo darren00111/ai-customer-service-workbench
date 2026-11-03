@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>接入与试聊 · 多平台智能客服</title>
+  <title>接入与试聊 · 抖店智能客服社区版</title>
   <link rel="icon" href="../assets/app-icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="workbench.css">
 </head>
 <body>
   <header>
-    <div><p class="eyebrow">多平台智能客服</p><h1>试聊与改正</h1></div>
+    <div><p class="eyebrow">抖店智能客服社区版</p><h1>试聊与改正</h1></div>
     <span class="badge" id="modelBadge">正在读取模型状态</span>
   </header>
   <main>
@@ -28,22 +28,22 @@
     </details>
     <section class="shop-controls" aria-label="选择或创建店铺">
       <label>当前店铺<select id="storeSelect" disabled></select></label>
-      <details><summary>接入新店铺</summary>
+      <details id="storeOnboarding"><summary>接入抖店（社区版限 1 家）</summary>
         <form id="createForm">
           <label>店铺标识<input id="newStoreId" pattern="[A-Za-z0-9_-]{1,64}" maxlength="64" required placeholder="例如 my_shop"></label>
           <label>店铺名称<input id="newStoreName" maxlength="100" required placeholder="例如 星光台球用品"></label>
-          <label>经营平台<select id="newPlatform"><option value="feige">抖店飞鸽</option><option value="taobao">淘宝／天猫（千牛待适配）</option><option value="pinduoduo">拼多多（网页连接待联调）</option><option value="xiaohongshu">小红书店铺（消息待接入）</option></select></label>
+          <label>经营平台<select id="newPlatform"><option value="feige">抖店飞鸽</option></select></label>
           <label>商家标识<input id="newMerchantId" value="local" pattern="[A-Za-z0-9_-]{1,64}" maxlength="64" required></label>
-          <p>同一商家的多平台店铺填写相同商家标识，方便共用商品属性；每家店铺标识必须唯一。</p>
+          <p>社区版仅支持 1 家抖店，已有店铺后不能再次创建。</p>
           <label>店铺品类<select id="newCategory"><option>通用零售</option><option>台球用品</option><option>服装</option><option>家居</option><option>数码用品</option></select></label>
           <button type="submit">创建店铺</button>
         </form>
-        <p>创建后自动发送默认关闭。拼多多可进入网页连接联调；淘宝目前可检查千牛客户端结构，小红书消息待接入。</p>
+        <p>创建后先打开主窗口的飞鸽登录入口，配置本店资料和模型；可在主窗口“回复模式”中设置建议或自动回复。</p>
       </details>
     </section>
     <section class="readiness" aria-label="接入检查" id="readiness"></section>
     <section class="card extra-panels" aria-labelledby="multiTitle">
-      <h2 id="multiTitle">多平台资料与会话准备</h2>
+      <h2 id="multiTitle">店铺资料与会话准备</h2>
       <p id="connectionStatus" role="status">选择店铺后显示平台连接能力。</p>
       <details id="pilotPanel" hidden><summary>淘宝／拼多多连接联调</summary>
         <p>先用测试会话核对登录身份、顾客、原文与收发回显。当前为开发验收流程，尚未开放正式自动接待。</p>

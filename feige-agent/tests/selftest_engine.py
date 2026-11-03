@@ -23,8 +23,8 @@ from app.engine import browser
 from app.engine import page as page_mod                  # noqa: E402
 from app.engine.page import PageAgent                    # noqa: E402
 
-CHROME = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
-PORT = 9333
+CHROME = browser.find_chrome()
+PORT = 19423
 PROFILE = ROOT / "data" / "test-profile"
 MOCK = (ROOT / "tests" / "feige_mock.html").as_uri()
 

@@ -43,13 +43,13 @@ def main():
             assert (installed / name / "added.txt").read_text() == "merchant history"
         metadata = run("[Console]::OutputEncoding = [Text.UTF8Encoding]::new(); "
                        "$shell=New-Object -ComObject WScript.Shell; "
-                       f"$link=$shell.CreateShortcut({quote(base / 'desktop' / '抖店智能客服.lnk')}); "
+                       f"$link=$shell.CreateShortcut({quote(base / 'desktop' / '抖店智能客服社区版.lnk')}); "
                        "@{target=$link.TargetPath;cwd=$link.WorkingDirectory;icon=$link.IconLocation} | ConvertTo-Json -Compress")
         link = json.loads(metadata)
         assert Path(link["target"]) == installed / "FeigeCustomerService.exe"
         assert Path(link["cwd"]) == installed
         assert link["icon"] == str(installed / "_internal/app/assets/app-icon.ico") + ",0"
-        assert (base / "menu" / "抖店智能客服.lnk").is_file()
+        assert (base / "menu" / "抖店智能客服社区版.lnk").is_file()
         print("PASS: fresh install, update, merchant data preservation, fixed shortcut target, start menu, paths with Chinese/spaces")
 
 

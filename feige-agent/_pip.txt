@@ -1,4 +1,0 @@
-Requirement already satisfied: pyflakes in C:\Users\1154\.workbuddy\binaries\python\envs\default\Lib\site-packages (3.4.0)
-
-[notice] A new release of pip is available: 26.1.2 -> 26.2.1
-[notice] To update, run: C:\Users\1154\.workbuddy\binaries\python\envs\default\Scripts\python.exe -m pip install --upgrade pip

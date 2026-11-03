@@ -15,6 +15,7 @@ from .sync import SyncManager
 from .learning import LearningLoop
 from .commerce import CommerceLearning, validate_sales
 from ..platforms import platform_info
+from ..edition import require_platform, require_capacity, BASE_CDP_PORT
 from .multichannel import WorkspaceData, SharedCatalog, ChannelInbox
 from .gapcards import GapBoard
 from .overrides import OverrideBook
@@ -47,6 +48,8 @@ class Workbench:
         rows = [{"store_id": key, "name": value["name"], "demo": True}
                 for key, value in self.fixtures.items()]
         if self.registry:
+            rows = []  # Optional examples remain in the separate experience window.
+        if self.registry:
             rows += [{"store_id": s.store_id, "name": s.name, "demo": False,
                       "platform": s.platform, "platform_name": platform_info(s.platform)['name'],
                       "merchant_id": s.merchant_id} for s in self.registry.load(enabled_only=False)]
@@ -62,7 +65,7 @@ class Workbench:
         return spec
 
     def knowledge(self, store_id):
-        if store_id not in {row["store_id"] for row in self.stores()}:
+        if store_id not in self.fixtures and store_id not in {row["store_id"] for row in self.stores()}:
             raise ValueError("店铺不存在，请先创建店铺")
         if store_id in self.fixtures:
             store = KnowledgeStore(self.root / "demo", store_id)
@@ -388,9 +391,11 @@ class Workbench:
             raise ValueError("请使用普通店铺标识，并填写1–100字店铺名称")
         if not isinstance(category, str) or not 1 <= len(category.strip()) <= 100:
             raise ValueError("请填写有效店铺品类")
-        with self._lock:
+        with self._lock, self.registry.creation_guard():
             existing = self.registry.load(enabled_only=False)
-            port = next(p for p in range(9222, 65536) if p not in {s.cdp_port for s in existing})
+            require_platform(platform)
+            require_capacity(existing, adding=True)
+            port = BASE_CDP_PORT
             platform_info(platform)
             manifest = default_manifest(store_id, name.strip(), port, platform, merchant_id)
             manifest["business"]["category"] = category.strip()
@@ -488,17 +493,7 @@ class Workbench:
         return self.inbox.save_draft(spec,conversation_id,messages[-1]['sequence'],result)
 
     def _pilot(self, store_id):
-        from ..channels.pinduoduo import PinduoduoPilot
-        from ..channels.taobao import QianniuPilot
-        spec = self.spec(store_id)
-        if spec.platform not in ('pinduoduo', 'taobao'):
-            raise ValueError('此连接用于淘宝和拼多多')
-        with self._lock:
-            if store_id not in self._pilots:
-                self._pilots[store_id] = (QianniuPilot(spec, self.live) if spec.platform == 'taobao' else
-                    PinduoduoPilot(spec, self.root.parent / 'profiles' / 'pinduoduo', self.live,
-                                   on_history=lambda rows:self.stage_observed_history(store_id,rows)))
-            return self._pilots[store_id]
+        raise ValueError('社区版仅支持抖店，请从主窗口打开飞鸽登录和启动接待')
 
     def stage_observed_history(self,store_id,rows):
         """Extract review candidates only from this store's observed records."""
@@ -553,26 +548,7 @@ class Workbench:
         return revisions
 
     def pilot_command(self, store_id, action, account_key='', reviewed=False):
-        if action == 'inspect_qianniu':
-            if self.spec(store_id).platform != 'taobao':
-                raise ValueError('请先选择淘宝店铺')
-            from ..channels.taobao import inspect_qianniu
-            return inspect_qianniu()
-        if action not in ('open_login', 'inspect', 'bind', 'poll', 'stop'):
-            raise ValueError('不支持的连接操作')
-        pilot = self._pilot(store_id)
-        if action in ('inspect','open_login','stop'):
-            state = self.stop_channel_monitor(store_id)
-            if state.get('stopping'):
-                raise ValueError('上一轮接待正在结束，请稍候再检查或断开连接')
-        if action == 'bind':
-            return pilot.bind(account_key, reviewed)
-        if action == 'stop':
-            pilot.close()
-            return pilot.status()
-        result=getattr(pilot, action)()
-        if action=='poll':self.reconcile_channel_deliveries(store_id)
-        return result
+        raise ValueError('社区版仅支持抖店，请从主窗口打开飞鸽登录和启动接待')
 
     def capture_product_revision(self,store_id):
         pilot=self._pilot(store_id)
@@ -802,39 +778,7 @@ class Workbench:
         self._closing_channels.discard(store_id)
 
     def start_channel_monitor(self, store_id, mode='draft', conversations=None, reviewed=False):
-        from ..channels.reception_worker import ChannelReceptionWorker
-        if mode not in ('draft','automatic','store') or reviewed is not True:
-            raise ValueError('请确认开始持续接待检查')
-        pilot = self._pilot(store_id)
-        self._finish_channel_stop(store_id)
-        if store_id in self._closing_channels:
-            raise ValueError('上一轮接待尚未结束，请稍候再启动')
-        if not pilot.bound:
-            raise ValueError('请先完成平台登录与店铺绑定')
-        conversations = conversations or []
-        if not isinstance(conversations,list) or len(conversations)>20 or any(not isinstance(v,str) or not 1<=len(v)<=200 for v in conversations):
-            raise ValueError('请从本店已采集会话中选择测试顾客')
-        if mode == 'automatic':
-            if pilot.spec.platform == 'taobao' and not pilot.status().get('verified_message_metadata'):
-                raise ValueError('千牛尚未核实逐条消息的作者与标识，请先完成客户端结构联调')
-            if not conversations:
-                raise ValueError('真实验收完成前，自动发送必须限定到明确的测试顾客')
-            if not self.models or not self.models.status().get('enabled'):
-                raise ValueError('请先启用并验证千问模型')
-            for cid in conversations:
-                if not self.live.is_live(self.spec(store_id),cid):
-                    raise ValueError('测试顾客必须来自本店已连接的平台消息')
-        authorization_generation=None
-        if mode=='store':
-            if conversations:raise ValueError('全店接待不使用测试顾客名单')
-            authorization_generation=self.require_store_automation(store_id)['generation']
-        with self._lock:
-            if self.stop_channel_monitor(store_id).get('stopping'):
-                raise ValueError('上一轮接待仍在结束，结束后才能重新启动')
-            worker = ChannelReceptionWorker(self,store_id,mode,conversations,authorization_generation)
-            self._channel_workers[store_id] = worker
-            worker.start()
-        return worker.status()
+        raise ValueError('社区版仅支持抖店，请从主窗口打开飞鸽登录和启动接待')
 
     def stop_channel_monitor(self,store_id):
         if store_id in self._channel_workers:

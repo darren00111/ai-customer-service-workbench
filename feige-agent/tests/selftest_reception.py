@@ -305,7 +305,7 @@ class ReceptionAcceptance(unittest.TestCase):
     def test_workbench_demo_and_onboarding(self):
         registry = StoreRegistry(self.root / "registry.json", self.root / "stores")
         wb = Workbench(self.root / "reception", self.root / "stores", registry)
-        self.assertEqual(len(wb.stores()), 3)
+        self.assertEqual(len(wb.stores()), 0)  # Community lists only actual connected shops.
         self.assertTrue(wb.info("demo_billiards")["demo"])
         one = wb.chat("demo_billiards", "黑杆多少钱")
         self.assertIn("199", one["draft_reply"])

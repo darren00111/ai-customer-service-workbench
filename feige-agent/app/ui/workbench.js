@@ -224,6 +224,7 @@ async function operation(fn) {
     controls.forEach((el, index) => { el.disabled = prior[index]; });
     pending = false;
     syncActivate();
+    $('chatSend').disabled = !currentStore;
     syncStoreAutomationControls();
     if(typeof syncMerchantControls==='function')syncMerchantControls();
   }
@@ -244,7 +245,10 @@ async function loadStores(selectId = '') {
   const stores = await invoke('list_stores');
   $('storeSelect').replaceChildren(...stores.map(shop => new Option(`${shop.platform_name ? shop.platform_name + ' · ' : ''}${shop.name}`, shop.store_id)));
   if (selectId) $('storeSelect').value = selectId;
-  $('storeSelect').disabled = false;
+  $('storeSelect').disabled = stores.length===0;
+  $('storeOnboarding').hidden = stores.length>=1;
+  if(!stores.length){currentStore='';$('storeOnboarding').open=true;$('readiness').textContent='请先接入你的抖店。社区版限 1 家店铺。';$('chatSend').disabled=true;return;}
+  $('chatSend').disabled=false;
   await selectStore();
 }
 async function selectStore() {
@@ -580,7 +584,7 @@ $('rollbackButton').addEventListener('click', () => operation(async () => {
   feedback(`已回退到版本 #${result.restored}${result.reopened_cards.length ? '，相关问题卡片已重新打开' : ''}。未发送的旧草稿会重新校验。`);
 }));
 function navigateToSection(section) {
-  const id={connection:'pilotPanel',knowledge:'merchantCatalog',versions:'knowledgeTitle',cards:'quickCards',overrides:'quickCorrectionForm'}[section];
+  const id={connection:'modelSettings',knowledge:'merchantCatalog',versions:'knowledgeTitle',cards:'quickCards',overrides:'quickCorrectionForm'}[section];
   const target=id && document.getElementById(id);if(!target)return;
   target.hidden=false;
   for(let parent=target;parent;parent=parent.parentElement)if(parent.tagName==='DETAILS')parent.open=true;
@@ -591,7 +595,7 @@ window.addEventListener('pywebviewready', async () => {
   $('bridgeHint').textContent = '本地工作台已连接。';
   try { await loadStores(await invoke('get_initial_store'));navigateToSection(await invoke('get_initial_section')); } catch (error) { feedback(error.message, true); }
   setInterval(async()=>{ if(!pending && document.visibilityState==='visible') {
-    try { await refreshInfo(); } catch (_) { /* Explicit operations surface errors. */ }
+    try { if(currentStore)await refreshInfo(); } catch (_) { /* Explicit operations surface errors. */ }
   } },10000);
 });
 setTimeout(() => {

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
-  <title>抖店智能客服</title>
+  <title>抖店智能客服社区版</title>
   <link rel="icon" href="../assets/app-icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -12,11 +12,11 @@
   <a class="skip-link" href="#main">跳到主要内容</a>
   <div class="app-shell">
     <header class="topbar">
-      <div class="brand" aria-label="抖店智能客服控制台">
+      <div class="brand" aria-label="抖店智能客服社区版控制台">
         <span class="brand-mark" aria-hidden="true">
           <img src="../assets/app-icon.svg" width="34" height="34" alt="">
         </span>
-        <span>抖店智能客服</span>
+        <span>抖店智能客服社区版</span>
         <span class="version" id="version">桌面控制台</span>
       </div>
       <div class="top-actions">
@@ -29,12 +29,12 @@
         </button>
         <button class="button button-primary" id="startAllButton" type="button">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 7 8 5-8 5V7Z"/></svg>
-          <span>启动全部店铺</span>
+          <span>启动店铺</span>
         </button>
       </div>
     </header>
 
-    <section class="welcome-strip" aria-label="首次使用指引">
+    <section hidden class="welcome-strip" aria-label="首次使用指引">
       <div><strong>第一次使用？先试一遍资料整理和客服回复。</strong><p>无需店铺账号或模型密钥。准备接入时，添加店铺，再分别检查连接和知识准备。</p></div>
       <button class="button button-primary" id="welcomeExperienceButton" type="button">开始模拟体验</button>
     </section>
@@ -51,6 +51,7 @@
           </div>
           <div class="store-buttons">
             <button class="button button-secondary" id="loginStoreButton" type="button" disabled>打开登录入口</button>
+            <button class="button button-secondary" id="autoReplyButton" type="button" disabled>回复模式</button>
             <button class="button button-secondary" id="chooseQianniuButton" type="button" hidden>选择千牛安装位置</button>
             <button class="button button-secondary" id="storeKnowledgeButton" type="button" disabled>店铺知识库</button>
             <button class="button button-secondary" id="connectionStoreButton" type="button" disabled>查看会话与接待设置</button>
@@ -65,8 +66,8 @@
           </div>
           <span class="count" id="shopCount">0</span>
         </div>
-        <label class="platform-filter">筛选平台
-          <select id="platformFilter"><option value="all">全部平台</option><option value="taobao">淘宝／天猫</option><option value="feige">抖店</option><option value="pinduoduo">拼多多</option></select>
+        <label hidden class="platform-filter">平台
+          <select id="platformFilter"><option value="feige">抖店</option></select>
         </label>
         <div class="shop-list" id="shopList" role="list"></div>
         <p id="shopListEmpty" class="muted" hidden>当前平台还没有店铺，点击“添加店铺”开始。</p>
@@ -121,7 +122,7 @@
           </section>
         </div>
         <section class="panel knowledge-panel" aria-labelledby="knowledgeQueueHeading">
-          <div class="panel-heading"><div><p class="eyebrow">后台资料补全</p><h2 id="knowledgeQueueHeading">各店待补知识</h2></div><span class="count" id="knowledgeQueueCount">0</span></div>
+          <div class="panel-heading"><div><p class="eyebrow">后台资料补全</p><h2 id="knowledgeQueueHeading">店铺待补知识</h2></div><span class="count" id="knowledgeQueueCount">0</span></div>
           <p class="muted">漏答和改判产生的问题卡片集中在这里。补资料后需要复测、核对并发布；售后仍在人工待办处理。</p>
           <div id="knowledgeQueueList" class="knowledge-queue"></div>
         </section>
@@ -144,17 +145,18 @@
   <dialog id="addStoreDialog" aria-labelledby="addStoreTitle" aria-describedby="addStoreHint">
     <form id="addStoreForm">
       <div class="panel-heading"><h2 id="addStoreTitle">添加店铺</h2><button class="button button-secondary" id="closeAddStore" type="button" aria-label="关闭添加店铺">关闭</button></div>
-      <p id="addStoreHint" class="muted">每家店独立保存登录资料和知识。添加后再登录、核对身份及测试接待，不会立即自动回复。</p>
-      <label>店铺平台<select id="newStorePlatform" required><option value="taobao">淘宝／天猫</option><option value="feige">抖店</option><option value="pinduoduo">拼多多</option></select></label>
-      <p id="newStorePlatformHint" class="muted">淘宝使用千牛桌面客户端；实际收发需要核对客户端兼容性。</p>
+      <p id="addStoreHint" class="muted">社区版只接入 1 家抖店。添加后登录本店、导入商品资料并验证模型，再开启接待。</p>
+      <label>店铺平台<select id="newStorePlatform" required><option value="feige">抖店</option></select></label>
+      <p id="newStorePlatformHint" class="muted">抖店使用本店独立的 Edge 登录窗口，沿用原版本飞鸽消息监听和回复流程。</p>
       <label>店铺名称<input id="newStoreName" maxlength="100" required placeholder="例如 品牌旗舰店"></label>
       <label>经营品类<input id="newStoreCategory" maxlength="100" value="通用零售" required></label>
-      <details><summary>商家分组（可选）</summary><label>商家标识<input id="newMerchantId" maxlength="64" pattern="[A-Za-z0-9_-]{1,64}" value="local"></label><p class="muted">同一商家可使用相同标识，便于关联共用商品属性；各店价格、库存和政策分别维护。</p></details>
+      <details hidden><summary>商家标识</summary><label>商家标识<input id="newMerchantId" maxlength="64" pattern="[A-Za-z0-9_-]{1,64}" value="local"></label><p class="muted">同一商家可使用相同标识，便于关联共用商品属性；各店价格、库存和政策分别维护。</p></details>
       <p id="addStoreError" role="alert"></p>
       <button class="button button-primary" id="submitAddStore" type="submit">添加并查看店铺</button>
     </form>
   </dialog>
 
+  <dialog id="autoReplyDialog"><form id="autoReplyForm"><h2>本店回复模式</h2><p>沿用原版本接待流程。先停止接待，再修改模式。</p><label>回复模式<select id="autoReplyMode"><option value="suggest">建议回复：生成草稿，人工确认发送</option><option value="auto">自动回复：按已核对的知识回复</option></select></label><label><input id="autoReplyReviewed" type="checkbox">我已核对当前登录店铺、真实商品资料、模型连接和测试会话</label><p>退款、售后等问题仍交人工。保存设置不会自动启动店铺。</p><p id="autoReplyError" role="alert"></p><button type="submit" class="button button-primary" id="saveAutoReply">保存模式</button><button type="button" class="button button-secondary" id="closeAutoReply">关闭</button></form></dialog>
   <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true">
     <span id="toastMessage"></span>
     <button id="toastClose" type="button" aria-label="关闭提示">×</button>

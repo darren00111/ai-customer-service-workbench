@@ -381,3 +381,5 @@ dialog details label { margin-block-start: 10px; }
   .status-dot { border: 1px solid CanvasText; }
   .button, .shop-item, .panel, .metric { border-color: CanvasText; }
 }
+
+[hidden]{display:none!important}

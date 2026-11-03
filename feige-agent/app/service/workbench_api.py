@@ -194,13 +194,7 @@ class WorkbenchAPI:
         return self._result(choose)
 
     def choose_qianniu_client(self):
-        from ..channels.qianniu_launcher import choose_client
-        def choose():
-            result = choose_client(self._window)
-            if not result['ok']:
-                raise ValueError(result['error'])
-            return result
-        return self._result(choose)
+        return {'ok':False,'error':'社区版仅支持抖店飞鸽'}
 
     def register_sync(self, store_id, path, kind, mode="merge", auto_publish=False, interval=60, trusted_outcomes=False):
         return self._result(lambda: self._workbench.sync(store_id).register(path, kind, mode, auto_publish, interval,trusted_outcomes))

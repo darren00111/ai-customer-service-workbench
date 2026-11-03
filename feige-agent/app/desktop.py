@@ -51,11 +51,7 @@ class DesktopAPI:
         self._experience_window = None
 
     def choose_qianniu_client(self):
-        from .channels.qianniu_launcher import choose_client
-        try:
-            return choose_client(self._main_window)
-        except (ValueError, OSError) as exc:
-            return {'ok': False, 'error': str(exc)}
+        return {'ok':False,'error':'社区版仅支持抖店飞鸽'}
 
     def _ensure_workbench(self):
         with self._workbench_lock:
@@ -86,8 +82,8 @@ class DesktopAPI:
         self._workbench_window = None
 
     def add_store(self, platform, name, merchant_id='local', category='通用零售') -> dict:
-        if platform not in ('feige','pinduoduo','taobao'):
-            return {'ok':False,'error':'请选择淘宝／天猫、抖店或拼多多'}
+        if platform != 'feige':
+            return {'ok':False,'error':'社区版仅支持抖店飞鸽'}
         if not isinstance(name,str) or not 1<=len(name.strip())<=100:
             return {'ok':False,'error':'请填写1–100字店铺名称'}
         if not isinstance(merchant_id,str) or not re.fullmatch(r'[A-Za-z0-9_-]{1,64}',merchant_id):
@@ -106,6 +102,54 @@ class DesktopAPI:
         except (ValueError,OSError) as exc:
             return {'ok':False,'error':str(exc)}
         finally:self._operation_lock.release()
+
+    def configure_auto_reply(self, store_id, enabled, reviewed=False):
+        if type(enabled) is not bool:
+            return {'ok': False, 'error': '请选择建议回复或自动回复'}
+        if not self._operation_lock.acquire(blocking=False):
+            return {'ok': False, 'error': '已有店铺操作正在执行，请稍候'}
+        try:
+            from .config import STORES_KB_DIR
+            from merchant import read_manifest, onboarding_errors
+            import yaml
+            specs = self._supervisor.registry.load(enabled_only=False)
+            spec = next((s for s in specs if s.store_id == store_id), None)
+            if not spec or spec.platform != 'feige':
+                raise ValueError('请先添加本店抖店')
+            runtime = self._supervisor.runtime.get(store_id, {})
+            if runtime.get('desired') or runtime.get('state') not in ('stopped', None):
+                raise ValueError('请先停止本店接待，再修改回复模式')
+            workbench = self._ensure_workbench()._workbench
+            manifest_path = workbench.stores_dir / store_id / 'merchant.yaml'
+            manifest = read_manifest(manifest_path)
+            if enabled:
+                if reviewed is not True:
+                    raise ValueError('请核对本店登录身份、商品资料和测试消息后确认')
+                model = workbench.models.status() if workbench.models else {}
+                if not model.get('enabled') or not model.get('connected'):
+                    raise ValueError('请先配置并验证本机千问模型')
+                knowledge = workbench.knowledge(store_id).active('products')
+                if not knowledge or knowledge['demo']:
+                    raise ValueError('请先导入并启用本店真实商品资料')
+                errors = onboarding_errors(manifest, knowledge['payload'])
+                if errors:
+                    raise ValueError('；'.join(errors))
+            manifest['automation']['auto_send'] = enabled
+            manifest['automation']['auto_start'] = False
+            manifest['automation']['auto_send_after_sales'] = False
+            temporary = manifest_path.with_suffix('.community.tmp')
+            temporary.write_text(yaml.safe_dump(manifest, allow_unicode=True, sort_keys=False), encoding='utf-8')
+            temporary.replace(manifest_path)
+            self._supervisor.specs = self._supervisor.registry.load()
+            agent = self._supervisor.agents.pop(store_id, None)
+            if agent:
+                agent.shutdown()
+            return {'ok': True, 'auto_reply_enabled': enabled,
+                    'hint': '设置已保存。点击启动店铺后生效；售后仍交人工处理。'}
+        except (ValueError, OSError) as exc:
+            return {'ok': False, 'error': str(exc)}
+        finally:
+            self._operation_lock.release()
 
     def login_store(self, store_id) -> dict:
         if not self._operation_lock.acquire(blocking=False):
@@ -131,8 +175,7 @@ class DesktopAPI:
                 'detail':'请自行登录并核对店铺身份；登录窗口打开不代表消息接待已就绪'}
             return {'ok':True,'store_id':store_id,'hint':('请在千牛客户端自行登录；多账号兼容性及收发仍待验证' if spec.platform=='taobao' else '请在本店独立窗口自行登录，再核对身份和接待资料')}
         except (ValueError,OSError,RuntimeError) as exc:
-            from .channels.qianniu_launcher import QianniuClientNotFound
-            return {'ok':False,'error':str(exc),'needs_client_path':isinstance(exc,QianniuClientNotFound)}
+            return {'ok':False,'error':str(exc),'needs_client_path':False}
         finally:self._operation_lock.release()
 
     def _workspace_overview(self,state):
@@ -200,6 +243,11 @@ class DesktopAPI:
         state['notifications']=self._supervisor.notifications.list_pending(limit=100)
         state['pending_notifications']=len(state['notifications'])
         self._workspace_overview(state)
+        state['edition'] = 'community'
+        state['max_stores'] = 1
+        flags = {s.store_id: bool(s.runtime_overrides.get('auto_send', False)) for s in self._supervisor.specs}
+        for shop in state.get('shops', []):
+            shop['auto_reply_enabled'] = flags.get(shop['store_id'], False)
         return state
 
     def _start_channel_store(self,store_id):
@@ -326,7 +374,7 @@ def run_desktop(debug: bool = False, initial_store_id: str | None = None) -> Non
     configure_desktop_identity()
     api = DesktopAPI()
     window = webview.create_window(
-        "抖店智能客服",
+        "抖店智能客服社区版 · 单店",
         (UI_DIR / "index.html").resolve().as_uri(),
         js_api=api,
         width=1440,

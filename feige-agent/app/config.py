@@ -4,9 +4,12 @@ from __future__ import annotations
 
 import json
 import sys
+import threading
+from contextlib import contextmanager
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from .platforms import platform_info
+from .edition import require_capacity, BASE_CDP_PORT
 
 if getattr(sys, "frozen", False):
     APP_DIR = Path(sys.executable).resolve().parent
@@ -31,7 +34,7 @@ if str(SCRIPTS_DIR) not in sys.path:
 from merchant import read_manifest  # noqa: E402
 
 DEFAULTS = {
-    "cdp_port": 9222,
+    "cdp_port": BASE_CDP_PORT,
     "profile_dir": str(DATA_DIR / "profiles" / "shop_001"),
     "workspace_url": "https://im.jinritemai.com/pc_seller_v2/main/workspace",
     "chrome_path": "",
@@ -41,8 +44,8 @@ DEFAULTS = {
     "max_conversations_per_cycle": 12,
     "gap_min": 0.8,
     "gap_max": 2.2,
-    "auto_send": True,
-    "auto_send_after_sales": True,
+    "auto_send": False,
+    "auto_send_after_sales": False,
     "pause_on_handoff": True,
     "quiet_after_hours": False,
     "max_replies_per_minute": 20,
@@ -145,6 +148,37 @@ class StoreSpec:
 
 class StoreRegistry:
     """Loads and validates the durable list used by the desktop application."""
+    _creation_mutex = threading.RLock()
+
+    @contextmanager
+    def creation_guard(self):
+        """Serialize onboarding before any shop files are created."""
+        import os
+        with self._creation_mutex:
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+            with (self.path.parent / 'community-create.lock').open('a+b') as handle:
+                handle.seek(0, 2)
+                if handle.tell() == 0:
+                    handle.write(b'0')
+                    handle.flush()
+                handle.seek(0)
+                try:
+                    if os.name == 'nt':
+                        import msvcrt
+                        msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+                    else:
+                        import fcntl
+                        fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                except OSError:
+                    raise ValueError('正在创建店铺，请稍候重试') from None
+                try:
+                    yield
+                finally:
+                    handle.seek(0)
+                    if os.name == 'nt':
+                        msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+                    else:
+                        fcntl.flock(handle, fcntl.LOCK_UN)
 
     def __init__(self, path: Path | str = REGISTRY_PATH,
                  manifest_dir: Path | str | None = None):
@@ -162,13 +196,12 @@ class StoreRegistry:
                 manifest = read_manifest(manifest_path)
                 platform = manifest["platform"]
                 automation = manifest["automation"]
-                if not automation.get("enabled", True):
-                    continue
                 spec = StoreSpec(
                     store_id=manifest["store_id"], name=manifest.get("name") or manifest["store_id"],
-                    cdp_port=int(platform.get("cdp_port", 9222)),
+                    cdp_port=int(platform.get("cdp_port", BASE_CDP_PORT)),
                     profile_dir=platform.get("profile_dir") or "data/profiles/%s" % manifest["store_id"],
                     kb_store_id=manifest["store_id"],
+                    enabled=bool(automation.get("enabled", True)),
                     auto_start=bool(automation.get("auto_start", False)),
                     workspace_url=platform.get("workspace_url") or (DEFAULTS["workspace_url"] if platform.get("type", "feige") == "feige" else ""),
                     chrome_path=platform.get("browser_path") or "",
@@ -184,6 +217,7 @@ class StoreRegistry:
 
     @staticmethod
     def validate(specs: list[StoreSpec]) -> None:
+        require_capacity(specs)
         ids, ports, profiles = set(), set(), set()
         for spec in specs:
             spec.validate()
@@ -200,8 +234,10 @@ class StoreRegistry:
                     raise ValueError("多店配置存在重复 %s：%s" % (label, value))
                 used.add(value)
 
-    def scaffold(self, count: int = 10, base_port: int = 9222) -> list[StoreSpec]:
+    def scaffold(self, count: int = 1, base_port: int = BASE_CDP_PORT) -> list[StoreSpec]:
         count = max(1, int(count))
+        if count > 1:
+            raise ValueError('社区版最多接入 1 家抖店')
         specs = [
             StoreSpec(
                 store_id="shop_%03d" % i,

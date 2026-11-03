@@ -209,7 +209,7 @@ class QwenInterpreter:
 
 class ModelManager:
     def __init__(self, path=None, protect=None, unprotect=None):
-        self._path = Path(path) if path else Path(os.environ.get("LOCALAPPDATA", str(Path.home()))) / "FeigeCustomerService" / "qwen.json"
+        self._path = Path(path) if path else Path(os.environ.get("LOCALAPPDATA", str(Path.home()))) / "FeigeCustomerServiceCommunity" / "qwen.json"
         self._protect = protect or _protect
         self._unprotect = unprotect or (lambda raw: _protect(raw, True))
         self._lock = threading.RLock()

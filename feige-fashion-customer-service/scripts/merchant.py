@@ -78,8 +78,8 @@ def validate_manifest(data: dict, directory_id: str | None = None) -> None:
             raise MerchantConfigError("缺少 %s 配置对象" % section)
     platform = data["platform"]
     platform_type = platform.get("type", "feige")
-    if platform_type not in {"feige", "pinduoduo", "taobao", "xiaohongshu"}:
-        raise MerchantConfigError("不支持的平台类型")
+    if platform_type != "feige":
+        raise MerchantConfigError("社区版仅支持抖店飞鸽")
     owner = data.get("merchant_id", "local")
     if not isinstance(owner, str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", owner):
         raise MerchantConfigError("merchant_id 只能包含1–64位字母、数字、下划线和短横线")

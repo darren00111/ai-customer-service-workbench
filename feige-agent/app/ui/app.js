@@ -15,34 +15,15 @@ const statusMeta = {
   stopping: { label: '正在停止', tone: 'warning', hint: '正在结束已开始的接待任务，请稍候。' },
 };
 
-const demoState = {
-  version: '1.2.2', configured: 10, online: 7, needs_attention: 2, pending_notifications: 3,
-  ts: new Date().toISOString(),
-  shops: Array.from({ length: 10 }, (_, i) => {
-    const states = ['online', 'online', 'not_logged_in', 'online', 'online', 'online', 'error', 'online', 'stopped', 'online'];
-    return {
-      store_id: `shop_${String(i + 1).padStart(3, '0')}`,
-      name: `店铺${String(i + 1).padStart(2, '0')}`,
-      cdp_port: 9222 + i,
-      state: states[i], watching: states[i] === 'online',
-      counters: { rounds: 128 + i * 7, sent: 18 + i, skipped: 61, errors: i === 6 ? 2 : 0, handoffs: i % 3 },
-      page: { hint: statusMeta[states[i]]?.hint || '' },
-    };
-  }),
-  notifications: [
-    { event_id: 'demo-1', store_id: 'shop_003', buyer: '顾客 8***2', category: 'handoff_after_sale', summary: '尺码不合适，想申请换货', reason: '退换货/退款类', confidence: 'high', draft_reply: '亲，收到您的售后需求了。麻烦您发送一下订单编号，并说明需要退货、换货还是退款，我帮您核实处理。', created_at: Date.now() / 1000 - 86 },
-    { event_id: 'demo-2', store_id: 'shop_007', buyer: '顾客 3***9', category: 'handoff_quality', summary: '收到后发现袖口开线', reason: '质量问题', confidence: 'high', draft_reply: '亲，很抱歉给您带来不便。麻烦您发送一下订单编号和问题位置的清晰照片，我帮您核实。', created_at: Date.now() / 1000 - 310 },
-    { event_id: 'demo-3', store_id: 'shop_001', buyer: '顾客 1***5', category: 'handoff_human_request', summary: '请转人工客服', reason: '顾客要求人工', confidence: 'high', draft_reply: '您好，人工客服已收到您的消息，请问具体需要帮您处理什么问题呢？', created_at: Date.now() / 1000 - 660 },
-  ],
-};
+const demoState = {version:'1.12.0-community',configured:0,online:0,needs_attention:0,pending_notifications:0,shops:[],notifications:[]};
 
 let state = demoState;
-let selectedId = demoState.shops[0].store_id;
+let selectedId = null;
 let apiReady = false;
 let busy = false;
 let toastTimer;
 let embedRequestInFlight = false;
-let platformFilter = 'all';
+let platformFilter = 'feige';
 const draftEdits = new Map();
 
 const $ = (id) => document.getElementById(id);
@@ -79,7 +60,8 @@ function setBusy(value) {
   busy = value;
   $('startAllButton').disabled = value;
   $('refreshButton').disabled = value;
-  $('addStoreButton').disabled = value;
+  $('addStoreButton').disabled = value || state.configured >= 1;
+  $('autoReplyButton').disabled = value || !selectedId;
   $('loginStoreButton').disabled = value || !selectedId;
   $('storeKnowledgeButton').disabled = value || !selectedId;
   $('connectionStoreButton').disabled = value || !selectedId;
@@ -167,7 +149,7 @@ function renderSelected() {
   if (!shop) {
     $('storeTitle').textContent='添加或选择店铺';$('storeStatus').textContent='未选择';
     $('storeStatus').className='status-pill neutral';
-    $('storeHint').textContent='选择平台并添加店铺，再单独登录和开启接待。';
+    $('storeHint').textContent='添加你的抖店，再打开飞鸽登录并配置知识和模型。社区版限 1 家店铺。';
     $('storeActionButton').disabled=true;$('detailList').replaceChildren();
     $('activityEmpty').hidden=false;return;
   }
@@ -313,7 +295,11 @@ function renderMetrics() {
 }
 
 function render() {
+  $('addStoreButton').disabled = busy || state.configured >= 1;
+  $('addStoreButton').textContent = state.configured >= 1 ? '已接入 1 / 1 家抖店' : '添加抖店（限 1 家）';
+  $('autoReplyButton').disabled = busy || !selectedId;
   if(!visibleShops().some(s=>s.store_id===selectedId))selectedId=visibleShops()[0]?.store_id || null;
+  $('autoReplyButton').disabled = busy || !selectedId;
   renderShops();
   renderSelected();
   renderMetrics();
@@ -465,6 +451,7 @@ $('chooseQianniuButton').addEventListener('click',async()=>{
 const platformLoginHints={taobao:'淘宝使用千牛桌面客户端；实际收发需要核对客户端兼容性。',feige:'抖店使用本店独立的 Edge 登录窗口，登录后再核对客服页面与接待资料。',pinduoduo:'拼多多使用本店独立浏览器窗口，登录后再检查身份和消息连接。'};
 function closeAddStore(){if(!$('submitAddStore').disabled)$('addStoreDialog').close();}
 $('addStoreButton').addEventListener('click',()=>{
+  if(state.configured>=1){showToast('社区版最多接入 1 家抖店',true);return;}
   $('addStoreError').textContent='';
   if(platformFilter!=='all')$('newStorePlatform').value=platformFilter;
   $('newStorePlatformHint').textContent=platformLoginHints[$('newStorePlatform').value];
@@ -568,3 +555,7 @@ const embedResizeObserver = new ResizeObserver(() => syncEmbedBounds());
 embedResizeObserver.observe($('browserHost'));
 
 render();
+
+$('autoReplyButton').addEventListener('click',()=>{const shop=state.shops.find(s=>s.store_id===selectedId);$('autoReplyMode').value=shop?.auto_reply_enabled?'auto':'suggest';$('autoReplyReviewed').checked=false;$('autoReplyError').textContent='';$('autoReplyDialog').showModal();});
+$('closeAutoReply').addEventListener('click',()=>$('autoReplyDialog').close());
+$('autoReplyForm').addEventListener('submit',async event=>{event.preventDefault();$('saveAutoReply').disabled=true;try{const result=await window.pywebview.api.configure_auto_reply(selectedId,$('autoReplyMode').value==='auto',$('autoReplyReviewed').checked);if(!result.ok){$('autoReplyError').textContent=result.error;return;}await refreshState();$('autoReplyDialog').close();showToast(result.hint);}catch(_){$('autoReplyError').textContent='修改失败，请刷新状态后重试';}finally{$('saveAutoReply').disabled=false;}});

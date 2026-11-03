@@ -3,7 +3,7 @@ from pathlib import Path
 import sys
 
 APP_ICON = Path(__file__).resolve().parent / "assets" / "app-icon.ico"
-APP_ID = "FeigeCustomerService.Desktop"
+APP_ID = "FeigeCustomerServiceCommunity.Desktop"
 
 
 def configure_desktop_identity():

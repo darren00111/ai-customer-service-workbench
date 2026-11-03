@@ -1,7 +1,0 @@
-
-=== 启动 ===
-浏览器        : {'status': 'launched', 'port': 9222, 'pid': 24864}
-页面状态      : wrong_site（当前标签页不是飞鸽后台）
-地址          : about:blank
-
-提示：当前标签页不是飞鸽后台

@@ -3,21 +3,17 @@ from dataclasses import asdict, dataclass
 import hashlib
 import json
 import re
+from .edition import require_platform
 
 
 PLATFORMS = {
     "feige": {"name": "抖店飞鸽", "runtime_available": True,
               "connection": "browser", "status": "已有网页适配，真实店铺仍需验收"},
-    "pinduoduo": {"name": "拼多多", "runtime_available": False,
-                   "connection": "pilot", "status": "网页消息试接入可联调，尚未通过真实店铺验收"},
-    "taobao": {"name": "淘宝／天猫", "runtime_available": False,
-               "connection": "pilot", "status": "千牛桌面收发适配待验收，需匹配实际客户端结构"},
-    "xiaohongshu": {"name": "小红书店铺", "runtime_available": False,
-                    "connection": "pending", "status": "资料准备可用，店铺客服消息连接待接入"},
 }
 
 
 def platform_info(platform):
+    require_platform(platform)
     if platform not in PLATFORMS:
         raise ValueError("不支持的平台")
     result = dict(PLATFORMS[platform], platform=platform)
@@ -35,7 +31,7 @@ def platform_info(platform):
 
 
 def list_platforms():
-    return [platform_info(key) for key in PLATFORMS]
+    return [platform_info('feige')]
 
 
 def create_agent(spec, **kwargs):
